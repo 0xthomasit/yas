@@ -26,11 +26,20 @@ exporters:
   prometheusremotewrite:
     endpoint: http://prometheus:9090/api/v1/write
     resource_to_telemetry_conversion:
-      enabled: true # Convert resource attributes to metric labels  
+      enabled: true   # Convert resource attributes to metric labels
   otlp:
     endpoint: "tempo:4317"
     tls:
       insecure: true
+    retry_on_failure:
+      enabled: true
+      initial_interval: 1s
+      max_interval: 10s
+      max_elapsed_time: 0s   # unlimited
+    sending_queue:
+      enabled: true
+      num_consumers: 2
+      queue_size: 4096
   loki:
     endpoint: http://loki:3100/loki/api/v1/push
     default_labels_enabled:
@@ -85,7 +94,13 @@ service:
       exporters: [loki]
   telemetry:
     metrics:
-      address: collector:8888
+      readers:
+        - pull:
+            exporter:
+              prometheus:
+                host: collector
+                port: 8889
+#      address: collector:8888 # Deprecated, use pull reader instead.
       level: detailed
     logs:
       level: INFO

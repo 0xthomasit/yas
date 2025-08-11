@@ -13,10 +13,12 @@ import com.yas.search.viewmodel.ProductGetVm;
 import com.yas.search.viewmodel.ProductListGetVm;
 import com.yas.search.viewmodel.ProductNameGetVm;
 import com.yas.search.viewmodel.ProductNameListVm;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.common.unit.Fuzziness;
 import org.springframework.data.domain.PageRequest;
@@ -106,11 +108,11 @@ public class ProductService {
             BoolQuery.Builder innerBool = new BoolQuery.Builder();
             for (String value : valuesArray) {
                 innerBool.should(s -> s
-                    .term(t -> t
-                        .field(productField)
-                        .value(value)
-                        .caseInsensitive(true)
-                    )
+                        .term(t -> t
+                                .field(productField)
+                                .value(value)
+                                .caseInsensitive(true)
+                        )
                 );
             }
             return new Query.Builder().bool(innerBool.build());

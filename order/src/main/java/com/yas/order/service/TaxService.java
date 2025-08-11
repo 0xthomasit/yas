@@ -1,9 +1,11 @@
 package com.yas.order.service;
 
-import com.yas.order.config.ServiceUrlConfig;
+import com.yas.commonlibrary.config.ServiceUrlConfig;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
+
 import java.net.URI;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -21,7 +23,7 @@ public class TaxService extends AbstractCircuitBreakFallbackHandler {
     @CircuitBreaker(name = "restCircuitBreaker", fallbackMethod = "handleDoubleFallback")
     public Double getTaxPercentByAddress(Long taxClassId, Long countryId, Long stateOrProvinceId, String zipCode) {
         final URI url = UriComponentsBuilder.fromHttpUrl(serviceUrlConfig.tax())
-            .path("/backoffice/tax-rates/tax-percent")
+                .path("/backoffice/tax-rates/tax-percent")
                 .queryParam("taxClassId", taxClassId)
                 .queryParam("countryId", countryId)
                 .queryParam("stateOrProvinceId", stateOrProvinceId)
@@ -29,7 +31,7 @@ public class TaxService extends AbstractCircuitBreakFallbackHandler {
                 .build().toUri();
 
         final String jwt = ((Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
-            .getTokenValue();
+                .getTokenValue();
         return webClient.get()
                 .uri(url)
                 .headers(h -> h.setBearerAuth(jwt))

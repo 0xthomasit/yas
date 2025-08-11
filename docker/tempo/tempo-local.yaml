@@ -3,17 +3,24 @@ server:
 
 distributor:
   receivers:
-    jaeger:
-      protocols:
-        thrift_http:
-        grpc:
-        thrift_binary:
-        thrift_compact:
-    zipkin:
     otlp:
       protocols:
         http:
+          endpoint: 0.0.0.0:4318
         grpc:
+          endpoint: 0.0.0.0:4317
+    jaeger:
+      protocols:
+        thrift_http:
+          endpoint: 0.0.0.0:14268
+        grpc:
+          endpoint: 0.0.0.0:14250
+        thrift_binary:
+          endpoint: 0.0.0.0:6832
+        thrift_compact:
+          endpoint: 0.0.0.0:6831
+    zipkin:
+      endpoint: 0.0.0.0:9411
     opencensus:
 ingester:
   trace_idle_period: 10s
@@ -31,11 +38,11 @@ storage:
     backend: local
     block:
       bloom_filter_false_positive: .05
-      index_downsample_bytes: 1000
-      encoding: zstd
+#      index_downsample_bytes: 1000
+#      encoding: zstd
     wal:
       path: /tmp/tempo/wal
-      encoding: snappy
+#      encoding: snappy
     local:
       path: /tmp/tempo/blocks
     pool:

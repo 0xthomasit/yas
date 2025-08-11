@@ -1,12 +1,14 @@
 package com.yas.payment.service;
 
-import com.yas.payment.config.ServiceUrlConfig;
+import com.yas.commonlibrary.config.ServiceUrlConfig;
 import com.yas.payment.model.CapturedPayment;
 import com.yas.payment.viewmodel.CheckoutStatusVm;
 import com.yas.payment.viewmodel.PaymentOrderStatusVm;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
+
 import java.net.URI;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -40,27 +42,27 @@ public class OrderService extends AbstractCircuitBreakFallbackHandler {
                 .uri(url)
                 .headers(h -> h.setBearerAuth(jwt))
                 .body(checkoutStatusVm)
-            .retrieve()
-            .body(Long.class);
+                .retrieve()
+                .body(Long.class);
     }
 
     @Retry(name = "restApi")
     @CircuitBreaker(name = "restCircuitBreaker", fallbackMethod = "handlePaymentOrderStatusFallback")
     public PaymentOrderStatusVm updateOrderStatus(PaymentOrderStatusVm orderPaymentStatusVm) {
         final String jwt =
-            ((Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getTokenValue();
+                ((Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getTokenValue();
         final URI url = UriComponentsBuilder
-            .fromHttpUrl(serviceUrlConfig.order())
-            .path("/storefront/orders/status")
-            .buildAndExpand()
-            .toUri();
+                .fromHttpUrl(serviceUrlConfig.order())
+                .path("/storefront/orders/status")
+                .buildAndExpand()
+                .toUri();
 
         return restClient.put()
-            .uri(url)
-            .headers(h -> h.setBearerAuth(jwt))
-            .body(orderPaymentStatusVm)
-            .retrieve()
-            .body(PaymentOrderStatusVm.class);
+                .uri(url)
+                .headers(h -> h.setBearerAuth(jwt))
+                .body(orderPaymentStatusVm)
+                .retrieve()
+                .body(PaymentOrderStatusVm.class);
     }
 
     protected Long handleLongFallback(Throwable throwable) throws Throwable {

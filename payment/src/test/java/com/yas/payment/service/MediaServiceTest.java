@@ -1,6 +1,5 @@
 package com.yas.payment.service;
 
-import static com.yas.payment.util.SecurityContextUtils.setUpSecurityContext;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -8,7 +7,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.yas.payment.config.ServiceUrlConfig;
+import com.yas.commonlibrary.config.ServiceUrlConfig;
 import com.yas.payment.model.PaymentProvider;
 import com.yas.payment.model.enumeration.PaymentMethod;
 import com.yas.payment.viewmodel.paymentprovider.MediaVm;
@@ -16,7 +15,6 @@ import com.yas.payment.viewmodel.paymentprovider.MediaVm;
 import java.net.URI;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -49,7 +47,8 @@ class MediaServiceTest {
         mockRestClientGetMethod(restClient);
         long codMediaId = -1L;
         long paypalMediaId = -2L;
-        when(responseSpec.body(new ParameterizedTypeReference<List<MediaVm>>() {}))
+        when(responseSpec.body(new ParameterizedTypeReference<List<MediaVm>>() {
+        }))
                 .thenReturn(List.of(
                         MediaVm.builder().id(codMediaId).url(URL_COD).build(),
                         MediaVm.builder().id(paypalMediaId).url(URL_PAYPAL).build()

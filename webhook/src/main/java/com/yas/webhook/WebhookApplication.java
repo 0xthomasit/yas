@@ -1,7 +1,7 @@
 package com.yas.webhook;
 
 import com.yas.commonlibrary.config.CorsConfig;
-import com.yas.webhook.config.ServiceUrlConfig;
+import com.yas.commonlibrary.config.ServiceUrlConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

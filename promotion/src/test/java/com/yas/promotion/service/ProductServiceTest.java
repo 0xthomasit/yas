@@ -6,14 +6,16 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.yas.promotion.config.ServiceUrlConfig;
+import com.yas.commonlibrary.config.ServiceUrlConfig;
 import com.yas.promotion.viewmodel.BrandVm;
 import com.yas.promotion.viewmodel.CategoryGetVm;
 import com.yas.promotion.viewmodel.ProductVm;
+
 import java.net.URI;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -52,11 +54,11 @@ class ProductServiceTest {
         List<Long> ids = List.of(1L);
 
         URI url = UriComponentsBuilder
-            .fromHttpUrl(serviceUrlConfig.product())
-            .path("/backoffice/products/by-ids")
-            .queryParams(createIdParams(ids))
-            .build()
-            .toUri();
+                .fromHttpUrl(serviceUrlConfig.product())
+                .path("/backoffice/products/by-ids")
+                .queryParams(createIdParams(ids))
+                .build()
+                .toUri();
 
         RestClient.RequestHeadersUriSpec requestHeadersUriSpec = Mockito.mock(RestClient.RequestHeadersUriSpec.class);
         when(restClient.get()).thenReturn(requestHeadersUriSpec);
@@ -64,8 +66,9 @@ class ProductServiceTest {
         when(requestHeadersUriSpec.headers(any())).thenReturn(requestHeadersUriSpec);
         when(requestHeadersUriSpec.retrieve()).thenReturn(responseSpec);
 
-        when(responseSpec.toEntity(new ParameterizedTypeReference<List<ProductVm>>() {}))
-            .thenReturn(ResponseEntity.ok(createProductVms()));
+        when(responseSpec.toEntity(new ParameterizedTypeReference<List<ProductVm>>() {
+        }))
+                .thenReturn(ResponseEntity.ok(createProductVms()));
 
         List<ProductVm> result = productService.getProductByIds(ids);
 
@@ -80,11 +83,11 @@ class ProductServiceTest {
         List<Long> ids = List.of(2L);
 
         URI url = UriComponentsBuilder
-            .fromHttpUrl(serviceUrlConfig.product())
-            .path("/backoffice/categories/by-ids")
-            .queryParams(createIdParams(ids))
-            .build()
-            .toUri();
+                .fromHttpUrl(serviceUrlConfig.product())
+                .path("/backoffice/categories/by-ids")
+                .queryParams(createIdParams(ids))
+                .build()
+                .toUri();
 
         RestClient.RequestHeadersUriSpec requestHeadersUriSpec = Mockito.mock(RestClient.RequestHeadersUriSpec.class);
         when(restClient.get()).thenReturn(requestHeadersUriSpec);
@@ -93,14 +96,15 @@ class ProductServiceTest {
         when(requestHeadersUriSpec.retrieve()).thenReturn(responseSpec);
 
         CategoryGetVm category = new CategoryGetVm(
-            2L,
-            "Example Category",
-            "example-category",
-            0L
+                2L,
+                "Example Category",
+                "example-category",
+                0L
         );
 
-        when(responseSpec.toEntity(new ParameterizedTypeReference<List<CategoryGetVm>>() {}))
-            .thenReturn(ResponseEntity.ok(List.of(category)));
+        when(responseSpec.toEntity(new ParameterizedTypeReference<List<CategoryGetVm>>() {
+        }))
+                .thenReturn(ResponseEntity.ok(List.of(category)));
 
         List<CategoryGetVm> result = productService.getCategoryByIds(ids);
 
@@ -114,11 +118,11 @@ class ProductServiceTest {
         List<Long> ids = List.of(4L);
 
         URI url = UriComponentsBuilder
-            .fromHttpUrl(serviceUrlConfig.product())
-            .path("/backoffice/brands/by-ids")
-            .queryParams(createIdParams(ids))
-            .build()
-            .toUri();
+                .fromHttpUrl(serviceUrlConfig.product())
+                .path("/backoffice/brands/by-ids")
+                .queryParams(createIdParams(ids))
+                .build()
+                .toUri();
 
         RestClient.RequestHeadersUriSpec requestHeadersUriSpec = Mockito.mock(RestClient.RequestHeadersUriSpec.class);
         when(restClient.get()).thenReturn(requestHeadersUriSpec);
@@ -127,14 +131,15 @@ class ProductServiceTest {
         when(requestHeadersUriSpec.retrieve()).thenReturn(responseSpec);
 
         BrandVm brand = new BrandVm(
-            3L,
-            "Example Brand",
-            "example-brand",
-            true
+                3L,
+                "Example Brand",
+                "example-brand",
+                true
         );
 
-        when(responseSpec.toEntity(new ParameterizedTypeReference<List<BrandVm>>() {}))
-            .thenReturn(ResponseEntity.ok(List.of(brand)));
+        when(responseSpec.toEntity(new ParameterizedTypeReference<List<BrandVm>>() {
+        }))
+                .thenReturn(ResponseEntity.ok(List.of(brand)));
 
         List<BrandVm> result = productService.getBrandByIds(ids);
 
@@ -148,11 +153,11 @@ class ProductServiceTest {
         List<Long> ids = List.of(1L);
 
         URI url = UriComponentsBuilder
-            .fromHttpUrl(serviceUrlConfig.product())
-            .path("/backoffice/products/by-categories")
-            .queryParams(createIdParams(ids))
-            .build()
-            .toUri();
+                .fromHttpUrl(serviceUrlConfig.product())
+                .path("/backoffice/products/by-categories")
+                .queryParams(createIdParams(ids))
+                .build()
+                .toUri();
 
         RestClient.RequestHeadersUriSpec requestHeadersUriSpec = Mockito.mock(RestClient.RequestHeadersUriSpec.class);
         when(restClient.get()).thenReturn(requestHeadersUriSpec);
@@ -160,8 +165,9 @@ class ProductServiceTest {
         when(requestHeadersUriSpec.headers(any())).thenReturn(requestHeadersUriSpec);
         when(requestHeadersUriSpec.retrieve()).thenReturn(responseSpec);
 
-        when(responseSpec.toEntity(new ParameterizedTypeReference<List<ProductVm>>() {}))
-            .thenReturn(ResponseEntity.ok(createProductVms()));
+        when(responseSpec.toEntity(new ParameterizedTypeReference<List<ProductVm>>() {
+        }))
+                .thenReturn(ResponseEntity.ok(createProductVms()));
 
         List<ProductVm> result = productService.getProductByCategoryIds(ids);
 
@@ -175,11 +181,11 @@ class ProductServiceTest {
         List<Long> ids = List.of(1L);
 
         URI url = UriComponentsBuilder
-            .fromHttpUrl(serviceUrlConfig.product())
-            .path("/backoffice/products/by-brands")
-            .queryParams(createIdParams(ids))
-            .build()
-            .toUri();
+                .fromHttpUrl(serviceUrlConfig.product())
+                .path("/backoffice/products/by-brands")
+                .queryParams(createIdParams(ids))
+                .build()
+                .toUri();
 
         RestClient.RequestHeadersUriSpec requestHeadersUriSpec = Mockito.mock(RestClient.RequestHeadersUriSpec.class);
         when(restClient.get()).thenReturn(requestHeadersUriSpec);
@@ -187,8 +193,9 @@ class ProductServiceTest {
         when(requestHeadersUriSpec.headers(any())).thenReturn(requestHeadersUriSpec);
         when(requestHeadersUriSpec.retrieve()).thenReturn(responseSpec);
 
-        when(responseSpec.toEntity(new ParameterizedTypeReference<List<ProductVm>>() {}))
-            .thenReturn(ResponseEntity.ok(createProductVms()));
+        when(responseSpec.toEntity(new ParameterizedTypeReference<List<ProductVm>>() {
+        }))
+                .thenReturn(ResponseEntity.ok(createProductVms()));
 
         List<ProductVm> result = productService.getProductByBrandIds(ids);
 
@@ -204,18 +211,18 @@ class ProductServiceTest {
 
     private List<ProductVm> createProductVms() {
         return List.of(
-            new ProductVm(
-                1L,
-                "Product 01",
-                "product-01",
-                true,
-                true,
-                false,
-                true,
-                10000000.0,
-                ZonedDateTime.now(),
-                2L
-            )
+                new ProductVm(
+                        1L,
+                        "Product 01",
+                        "product-01",
+                        true,
+                        true,
+                        false,
+                        true,
+                        10000000.0,
+                        ZonedDateTime.now(),
+                        2L
+                )
         );
     }
 }

@@ -9,13 +9,15 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.yas.inventory.config.ServiceUrlConfig;
+import com.yas.commonlibrary.config.ServiceUrlConfig;
 import com.yas.inventory.model.enumeration.FilterExistInWhSelection;
 import com.yas.inventory.viewmodel.product.ProductInfoVm;
 import com.yas.inventory.viewmodel.product.ProductQuantityPostVm;
+
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -54,22 +56,22 @@ class ProductServiceTest {
         Long productId = 1L;
 
         final URI url = UriComponentsBuilder
-            .fromHttpUrl(PRODUCT_URL)
-            .path("/backoffice/products/" + productId)
-            .build()
-            .toUri();
+                .fromHttpUrl(PRODUCT_URL)
+                .path("/backoffice/products/" + productId)
+                .build()
+                .toUri();
 
         RestClient.RequestHeadersUriSpec requestHeadersUriSpec
-            = Mockito.mock(RestClient.RequestHeadersUriSpec.class);
+                = Mockito.mock(RestClient.RequestHeadersUriSpec.class);
         when(restClient.get()).thenReturn(requestHeadersUriSpec);
         when(requestHeadersUriSpec.uri(url)).thenReturn(requestHeadersUriSpec);
         when(requestHeadersUriSpec.headers(any())).thenReturn(requestHeadersUriSpec);
         when(requestHeadersUriSpec.retrieve()).thenReturn(responseSpec);
 
         ProductInfoVm productInfoVm = new ProductInfoVm(productId,
-            "ProductName", "ProductSKU", true);
+                "ProductName", "ProductSKU", true);
         when(responseSpec.body(ProductInfoVm.class))
-            .thenReturn(productInfoVm);
+                .thenReturn(productInfoVm);
 
         ProductInfoVm result = productService.getProduct(productId);
 
@@ -92,22 +94,23 @@ class ProductServiceTest {
         params.add("productIds", productIds.stream().map(String::valueOf).collect(Collectors.joining(",")));
 
         final URI url = UriComponentsBuilder
-            .fromHttpUrl(PRODUCT_URL)
-            .path("/backoffice/products/for-warehouse")
-            .queryParams(params)
-            .build()
-            .toUri();
+                .fromHttpUrl(PRODUCT_URL)
+                .path("/backoffice/products/for-warehouse")
+                .queryParams(params)
+                .build()
+                .toUri();
 
         RestClient.RequestHeadersUriSpec requestHeadersUriSpec
-            = Mockito.mock(RestClient.RequestHeadersUriSpec.class);
+                = Mockito.mock(RestClient.RequestHeadersUriSpec.class);
         when(restClient.get()).thenReturn(requestHeadersUriSpec);
         when(requestHeadersUriSpec.uri(url)).thenReturn(requestHeadersUriSpec);
         when(requestHeadersUriSpec.headers(any())).thenReturn(requestHeadersUriSpec);
         when(requestHeadersUriSpec.retrieve()).thenReturn(responseSpec);
         ResponseEntity responseEntity = mock(ResponseEntity.class);
         ProductInfoVm productInfoVm = new ProductInfoVm(1L, productName, productSku, true);
-        when(responseSpec.toEntity(new ParameterizedTypeReference<List<ProductInfoVm>>() {}))
-            .thenReturn(responseEntity);
+        when(responseSpec.toEntity(new ParameterizedTypeReference<List<ProductInfoVm>>() {
+        }))
+                .thenReturn(responseEntity);
         when(responseEntity.getBody()).thenReturn(List.of(productInfoVm));
 
         List<ProductInfoVm> result = productService.filterProducts(productName, productSku, productIds, selection);
@@ -123,10 +126,10 @@ class ProductServiceTest {
         List<ProductQuantityPostVm> productQuantityPostVms = List.of(new ProductQuantityPostVm(1L, 100L));
 
         final URI url = UriComponentsBuilder
-            .fromHttpUrl(serviceUrlConfig.product())
-            .path("/backoffice/products/update-quantity")
-            .buildAndExpand()
-            .toUri();
+                .fromHttpUrl(serviceUrlConfig.product())
+                .path("/backoffice/products/update-quantity")
+                .buildAndExpand()
+                .toUri();
 
         RestClient.RequestBodyUriSpec requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
         when(restClient.put()).thenReturn(requestBodyUriSpec);

@@ -6,8 +6,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.yas.order.config.ServiceUrlConfig;
 import java.net.URI;
+
+import com.yas.commonlibrary.config.ServiceUrlConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -46,12 +47,12 @@ class TaxServiceTest {
         String zipCode = "TEST";
 
         URI url = UriComponentsBuilder.fromHttpUrl(serviceUrlConfig.tax())
-            .path("/backoffice/tax-rates/tax-percent")
-            .queryParam("taxClassId", taxClassId)
-            .queryParam("countryId", countryId)
-            .queryParam("stateOrProvinceId", stateOrProvinceId)
-            .queryParam("zipCode", zipCode)
-            .build().toUri();
+                .path("/backoffice/tax-rates/tax-percent")
+                .queryParam("taxClassId", taxClassId)
+                .queryParam("countryId", countryId)
+                .queryParam("stateOrProvinceId", stateOrProvinceId)
+                .queryParam("zipCode", zipCode)
+                .build().toUri();
 
         RestClient.RequestHeadersUriSpec requestHeadersUriSpec = Mockito.mock(RestClient.RequestHeadersUriSpec.class);
         when(restClient.get()).thenReturn(requestHeadersUriSpec);
@@ -59,10 +60,10 @@ class TaxServiceTest {
         when(requestHeadersUriSpec.headers(any())).thenReturn(requestHeadersUriSpec);
         when(requestHeadersUriSpec.retrieve()).thenReturn(responseSpec);
         when(responseSpec.body(Double.class))
-            .thenReturn(1.1);
+                .thenReturn(1.1);
 
         Double result = taxService.getTaxPercentByAddress(taxClassId,
-            countryId, stateOrProvinceId, zipCode);
+                countryId, stateOrProvinceId, zipCode);
 
         assertThat(result).isEqualTo(1.1);
     }

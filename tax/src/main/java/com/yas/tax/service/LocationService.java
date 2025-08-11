@@ -1,11 +1,13 @@
 package com.yas.tax.service;
 
-import com.yas.tax.config.ServiceUrlConfig;
+import com.yas.commonlibrary.config.ServiceUrlConfig;
 import com.yas.tax.viewmodel.location.StateOrProvinceAndCountryGetNameVm;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
+
 import java.net.URI;
 import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,20 +26,20 @@ public class LocationService extends AbstractCircuitBreakFallbackHandler {
     @CircuitBreaker(name = "restCircuitBreaker", fallbackMethod = "handleLocationNameListFallback")
     public List<StateOrProvinceAndCountryGetNameVm> getStateOrProvinceAndCountryNames(List<Long> stateOrProvinceIds) {
         final URI url = UriComponentsBuilder.fromHttpUrl(serviceUrlConfig.location())
-            .path("/backoffice/state-or-provinces/state-country-names")
-            .queryParam("stateOrProvinceIds", stateOrProvinceIds).build().toUri();
+                .path("/backoffice/state-or-provinces/state-country-names")
+                .queryParam("stateOrProvinceIds", stateOrProvinceIds).build().toUri();
         final String jwt =
-            ((Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getTokenValue();
+                ((Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getTokenValue();
         return restClient.get()
-            .uri(url)
-            .headers(h -> h.setBearerAuth(jwt))
-            .retrieve()
-            .body(new ParameterizedTypeReference<List<StateOrProvinceAndCountryGetNameVm>>() {
-            });
+                .uri(url)
+                .headers(h -> h.setBearerAuth(jwt))
+                .retrieve()
+                .body(new ParameterizedTypeReference<List<StateOrProvinceAndCountryGetNameVm>>() {
+                });
     }
 
     protected List<StateOrProvinceAndCountryGetNameVm> handleLocationNameListFallback(Throwable throwable)
-        throws Throwable {
+            throws Throwable {
         return handleTypedFallback(throwable);
     }
 }

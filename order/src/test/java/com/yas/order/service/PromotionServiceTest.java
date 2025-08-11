@@ -1,6 +1,6 @@
 package com.yas.order.service;
 
-import com.yas.order.config.ServiceUrlConfig;
+import com.yas.commonlibrary.config.ServiceUrlConfig;
 import com.yas.order.viewmodel.promotion.PromotionUsageVm;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;

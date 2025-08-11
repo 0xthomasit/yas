@@ -1,8 +1,8 @@
 package com.yas.order.service;
 
+import com.yas.commonlibrary.config.ServiceUrlConfig;
 import com.yas.commonlibrary.exception.NotFoundException;
 import com.yas.commonlibrary.utils.AuthenticationUtils;
-import com.yas.order.config.ServiceUrlConfig;
 import com.yas.order.viewmodel.order.OrderItemVm;
 import com.yas.order.viewmodel.order.OrderVm;
 import com.yas.order.viewmodel.product.ProductCheckoutListVm;
@@ -11,12 +11,14 @@ import com.yas.order.viewmodel.product.ProductQuantityItem;
 import com.yas.order.viewmodel.product.ProductVariationVm;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
+
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;

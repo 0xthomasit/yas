@@ -1,10 +1,12 @@
 package com.yas.order.service;
 
-import com.yas.order.config.ServiceUrlConfig;
+import com.yas.commonlibrary.config.ServiceUrlConfig;
 import com.yas.order.viewmodel.customer.CustomerVm;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
+
 import java.net.URI;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -22,7 +24,7 @@ public class CustomerService extends AbstractCircuitBreakFallbackHandler {
     @CircuitBreaker(name = "restCircuitBreaker", fallbackMethod = "handleCustomerFallback")
     public CustomerVm getCustomer() {
         final String jwt = ((Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
-            .getTokenValue();
+                .getTokenValue();
         final URI url = UriComponentsBuilder
                 .fromHttpUrl(serviceUrlConfig.customer())
                 .path("/storefront/customer/profile")

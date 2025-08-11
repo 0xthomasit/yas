@@ -2,18 +2,16 @@ package com.yas.payment.service;
 
 import static com.yas.payment.util.SecurityContextUtils.setUpSecurityContext;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
 
+import com.yas.commonlibrary.config.ServiceUrlConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -21,7 +19,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClient;
 
-import com.yas.payment.config.ServiceUrlConfig;
 import com.yas.payment.model.PaymentProvider;
 import com.yas.payment.model.enumeration.PaymentMethod;
 

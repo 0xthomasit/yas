@@ -4,7 +4,9 @@ import com.yas.commonlibrary.config.ServiceUrlConfig;
 import com.yas.product.viewmodel.NoFileMediaVm;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
+
 import java.net.URI;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.MultipartBodyBuilder;
@@ -26,7 +28,7 @@ public class MediaService extends AbstractCircuitBreakFallbackHandler {
     public NoFileMediaVm saveFile(MultipartFile multipartFile, String caption, String fileNameOverride) {
         final URI url = UriComponentsBuilder.fromHttpUrl(serviceUrlConfig.media()).path("/medias").build().toUri();
         final String jwt = ((Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
-            .getTokenValue();
+                .getTokenValue();
 
         final MultipartBodyBuilder builder = new MultipartBodyBuilder();
         builder.part("multipartFile", multipartFile.getResource());
@@ -50,7 +52,7 @@ public class MediaService extends AbstractCircuitBreakFallbackHandler {
             return new NoFileMediaVm(null, "", "", "", "");
         }
         final URI url = UriComponentsBuilder.fromHttpUrl(serviceUrlConfig.media())
-            .path("/medias/{id}").buildAndExpand(id).toUri();
+                .path("/medias/{id}").buildAndExpand(id).toUri();
         return restClient.get()
                 .uri(url)
                 .retrieve()
@@ -61,9 +63,9 @@ public class MediaService extends AbstractCircuitBreakFallbackHandler {
     @CircuitBreaker(name = "restCircuitBreaker", fallbackMethod = "handleBodilessFallback")
     public void removeMedia(Long id) {
         final URI url = UriComponentsBuilder.fromHttpUrl(serviceUrlConfig.media()).path("/medias/{id}")
-            .buildAndExpand(id).toUri();
+                .buildAndExpand(id).toUri();
         final String jwt = ((Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
-            .getTokenValue();
+                .getTokenValue();
         restClient.delete()
                 .uri(url)
                 .headers(h -> h.setBearerAuth(jwt))

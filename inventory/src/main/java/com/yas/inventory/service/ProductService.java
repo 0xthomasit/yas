@@ -1,15 +1,17 @@
 package com.yas.inventory.service;
 
-import com.yas.inventory.config.ServiceUrlConfig;
+import com.yas.commonlibrary.config.ServiceUrlConfig;
 import com.yas.inventory.model.enumeration.FilterExistInWhSelection;
 import com.yas.inventory.utils.AuthenticationUtils;
 import com.yas.inventory.viewmodel.product.ProductInfoVm;
 import com.yas.inventory.viewmodel.product.ProductQuantityPostVm;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
+
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -33,15 +35,15 @@ public class ProductService extends AbstractCircuitBreakFallbackHandler {
         String jwt = AuthenticationUtils.extractJwt();
 
         final URI url = UriComponentsBuilder
-            .fromHttpUrl(serviceUrlConfig.product())
-            .path("/backoffice/products/" + id)
-            .build()
-            .toUri();
+                .fromHttpUrl(serviceUrlConfig.product())
+                .path("/backoffice/products/" + id)
+                .build()
+                .toUri();
         return restClient.get()
-            .uri(url)
-            .headers(h -> h.setBearerAuth(jwt))
-            .retrieve()
-            .body(ProductInfoVm.class);
+                .uri(url)
+                .headers(h -> h.setBearerAuth(jwt))
+                .retrieve()
+                .body(ProductInfoVm.class);
     }
 
     @Retry(name = "restApi")
@@ -58,38 +60,38 @@ public class ProductService extends AbstractCircuitBreakFallbackHandler {
         }
         String jwt = AuthenticationUtils.extractJwt();
         final URI url = UriComponentsBuilder
-            .fromHttpUrl(serviceUrlConfig.product())
-            .path("/backoffice/products/for-warehouse")
-            .queryParams(params)
-            .build()
-            .toUri();
+                .fromHttpUrl(serviceUrlConfig.product())
+                .path("/backoffice/products/for-warehouse")
+                .queryParams(params)
+                .build()
+                .toUri();
         return restClient.get()
-            .uri(url)
-            .headers(h -> h.setBearerAuth(jwt))
-            .retrieve()
-            .toEntity(new ParameterizedTypeReference<List<ProductInfoVm>>() {
-            })
-            .getBody();
+                .uri(url)
+                .headers(h -> h.setBearerAuth(jwt))
+                .retrieve()
+                .toEntity(new ParameterizedTypeReference<List<ProductInfoVm>>() {
+                })
+                .getBody();
     }
 
     @Retry(name = "restApi")
     @CircuitBreaker(name = "restCircuitBreaker", fallbackMethod = "handleBodilessFallback")
     public void updateProductQuantity(List<ProductQuantityPostVm> productQuantityPostVms) {
         final String jwt =
-            ((Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getTokenValue();
+                ((Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getTokenValue();
 
         final URI url = UriComponentsBuilder
-            .fromHttpUrl(serviceUrlConfig.product())
-            .path("/backoffice/products/update-quantity")
-            .buildAndExpand()
-            .toUri();
+                .fromHttpUrl(serviceUrlConfig.product())
+                .path("/backoffice/products/update-quantity")
+                .buildAndExpand()
+                .toUri();
 
         restClient.put()
-            .uri(url)
-            .headers(h -> h.setBearerAuth(jwt))
-            .body(productQuantityPostVms)
-            .retrieve()
-            .body(Void.class);
+                .uri(url)
+                .headers(h -> h.setBearerAuth(jwt))
+                .body(productQuantityPostVms)
+                .retrieve()
+                .body(Void.class);
     }
 
     protected ProductInfoVm handleProductInfoFallback(Throwable throwable) throws Throwable {

@@ -6,15 +6,16 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.yas.payment.config.ServiceUrlConfig;
+import com.yas.commonlibrary.config.ServiceUrlConfig;
 import com.yas.payment.model.CapturedPayment;
 import com.yas.payment.model.enumeration.PaymentMethod;
 import com.yas.payment.model.enumeration.PaymentStatus;
-import com.yas.payment.viewmodel.CapturePaymentResponseVm;
 import com.yas.payment.viewmodel.CheckoutStatusVm;
 import com.yas.payment.viewmodel.PaymentOrderStatusVm;
+
 import java.math.BigDecimal;
 import java.net.URI;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -47,21 +48,21 @@ class OrderServiceTest {
     void testUpdateCheckoutStatus_whenNormalCase_returnLong() {
 
         CapturedPayment capturedPayment = CapturedPayment.builder()
-            .orderId(12345L)
-            .checkoutId("checkout-1234")
-            .amount(new BigDecimal("99.99"))
-            .paymentFee(new BigDecimal("2.50"))
-            .gatewayTransactionId("txn-67890")
-            .paymentMethod(PaymentMethod.COD)
-            .paymentStatus(PaymentStatus.COMPLETED)
-            .failureMessage(null)
-            .build();
+                .orderId(12345L)
+                .checkoutId("checkout-1234")
+                .amount(new BigDecimal("99.99"))
+                .paymentFee(new BigDecimal("2.50"))
+                .gatewayTransactionId("txn-67890")
+                .paymentMethod(PaymentMethod.COD)
+                .paymentStatus(PaymentStatus.COMPLETED)
+                .failureMessage(null)
+                .build();
 
         URI url = UriComponentsBuilder
-            .fromHttpUrl(serviceUrlConfig.order())
-            .path("/storefront/checkouts/status")
-            .buildAndExpand()
-            .toUri();
+                .fromHttpUrl(serviceUrlConfig.order())
+                .path("/storefront/checkouts/status")
+                .buildAndExpand()
+                .toUri();
 
         RestClient.RequestBodyUriSpec requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
         when(restClient.put()).thenReturn(requestBodyUriSpec);
@@ -82,17 +83,17 @@ class OrderServiceTest {
 
 
         PaymentOrderStatusVm statusVm = PaymentOrderStatusVm.builder()
-            .orderId(123456L)
-            .orderStatus("COMPLETED")
-            .paymentId(78910L)
-            .paymentStatus("SUCCESS")
-            .build();
+                .orderId(123456L)
+                .orderStatus("COMPLETED")
+                .paymentId(78910L)
+                .paymentStatus("SUCCESS")
+                .build();
 
         URI url = UriComponentsBuilder
-            .fromHttpUrl(serviceUrlConfig.order())
-            .path("/storefront/orders/status")
-            .buildAndExpand()
-            .toUri();
+                .fromHttpUrl(serviceUrlConfig.order())
+                .path("/storefront/orders/status")
+                .buildAndExpand()
+                .toUri();
 
         RestClient.RequestBodyUriSpec requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
         when(restClient.put()).thenReturn(requestBodyUriSpec);

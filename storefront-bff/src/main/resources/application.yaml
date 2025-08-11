@@ -15,7 +15,7 @@ spring:
           keycloak:
             issuer-uri: http://identity/realms/Yas
         registration:
-          keycloak:
+          api-client:
             provider: keycloak
             client-id: storefront-bff
             client-secret: ZrU9I0q2uXBglBnmvyJdkl1lf0ncr8tn #gitleaks:allow
@@ -71,7 +71,7 @@ spring:
 spring:
   config:
     activate:
-      on-profile: "prod"
+      on-profile: "dev"
   cloud:
     gateway:
       default-filters:

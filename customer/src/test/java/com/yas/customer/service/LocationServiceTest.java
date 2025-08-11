@@ -8,13 +8,15 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.yas.customer.config.ServiceUrlConfig;
+import com.yas.commonlibrary.config.ServiceUrlConfig;
 import com.yas.customer.viewmodel.address.AddressDetailVm;
 import com.yas.customer.viewmodel.address.AddressPostVm;
 import com.yas.customer.viewmodel.address.AddressVm;
+
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -49,10 +51,10 @@ class LocationServiceTest {
 
         when(serviceUrlConfig.location()).thenReturn(INVENTORY_URL);
         URI uri = UriComponentsBuilder.fromHttpUrl(INVENTORY_URL)
-            .path("/storefront/addresses")
-            .queryParam("ids", ids)
-            .build()
-            .toUri();
+                .path("/storefront/addresses")
+                .queryParam("ids", ids)
+                .build()
+                .toUri();
 
         setUpSecurityContext("test");
         RestClient.RequestHeadersUriSpec requestHeadersUriSpec = Mockito.mock(RestClient.RequestHeadersUriSpec.class);
@@ -62,8 +64,9 @@ class LocationServiceTest {
         when(requestHeadersUriSpec.retrieve()).thenReturn(responseSpec);
 
         AddressDetailVm addressDetail = getAddressDetailVm();
-        when(responseSpec.body(new ParameterizedTypeReference<List<AddressDetailVm>>() {}))
-            .thenReturn(Collections.singletonList(addressDetail));
+        when(responseSpec.body(new ParameterizedTypeReference<List<AddressDetailVm>>() {
+        }))
+                .thenReturn(Collections.singletonList(addressDetail));
 
         List<AddressDetailVm> result = locationService.getAddressesByIdList(ids);
 
@@ -78,9 +81,9 @@ class LocationServiceTest {
         Long id = 1L;
         when(serviceUrlConfig.location()).thenReturn(INVENTORY_URL);
         URI uri = UriComponentsBuilder.fromHttpUrl(INVENTORY_URL)
-            .path("/storefront/addresses/{id}")
-            .buildAndExpand(id)
-            .toUri();
+                .path("/storefront/addresses/{id}")
+                .buildAndExpand(id)
+                .toUri();
 
         setUpSecurityContext("test");
         RestClient.RequestHeadersUriSpec requestHeadersUriSpec = Mockito.mock(RestClient.RequestHeadersUriSpec.class);
@@ -91,7 +94,7 @@ class LocationServiceTest {
 
         AddressDetailVm addressDetail = getAddressDetailVm();
         when(responseSpec.body(AddressDetailVm.class))
-            .thenReturn(addressDetail);
+                .thenReturn(addressDetail);
 
         AddressDetailVm result = locationService.getAddressById(id);
 
@@ -103,9 +106,9 @@ class LocationServiceTest {
 
         when(serviceUrlConfig.location()).thenReturn(INVENTORY_URL);
         URI uri = UriComponentsBuilder.fromHttpUrl(INVENTORY_URL)
-            .path("/storefront/addresses")
-            .build()
-            .toUri();
+                .path("/storefront/addresses")
+                .build()
+                .toUri();
 
         setUpSecurityContext("test");
 
@@ -127,45 +130,45 @@ class LocationServiceTest {
 
     private AddressDetailVm getAddressDetailVm() {
         return new AddressDetailVm(
-            1L,
-            "John Doe",
-            "+1234567890",
-            "123 Elm Street",
-            "Springfield",
-            "62701",
-            101L,
-            "Downtown",
-            201L,
-            "Illinois",
-            301L,
-            "United States"
+                1L,
+                "John Doe",
+                "+1234567890",
+                "123 Elm Street",
+                "Springfield",
+                "62701",
+                101L,
+                "Downtown",
+                201L,
+                "Illinois",
+                301L,
+                "United States"
         );
     }
 
     private AddressPostVm getAddressPostVm() {
         return new AddressPostVm(
-            "Jane Smith",
-            "+1987654321",
-            "456 Oak Avenue",
-            "Metropolis",
-            "54321",
-            102L,
-            202L,
-            302L
+                "Jane Smith",
+                "+1987654321",
+                "456 Oak Avenue",
+                "Metropolis",
+                "54321",
+                102L,
+                202L,
+                302L
         );
     }
 
     private AddressVm getAddressVm() {
         return new AddressVm(
-            1L,
-            "Alice Johnson",
-            "+1239874560",
-            "789 Pine Road",
-            "Gotham",
-            "10001",
-            103L,
-            203L,
-            303L
+                1L,
+                "Alice Johnson",
+                "+1239874560",
+                "789 Pine Road",
+                "Gotham",
+                "10001",
+                103L,
+                203L,
+                303L
         );
     }
 

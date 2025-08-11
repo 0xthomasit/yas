@@ -7,9 +7,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.yas.order.config.ServiceUrlConfig;
+import com.yas.commonlibrary.config.ServiceUrlConfig;
 import com.yas.order.viewmodel.customer.CustomerVm;
+
 import java.net.URI;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -42,10 +44,10 @@ class CustomerServiceTest {
     void testGetCustomer_ifNormalCase_returnCustomerVm() {
 
         final URI url = UriComponentsBuilder
-            .fromHttpUrl(serviceUrlConfig.customer())
-            .path("/storefront/customer/profile")
-            .buildAndExpand()
-            .toUri();
+                .fromHttpUrl(serviceUrlConfig.customer())
+                .path("/storefront/customer/profile")
+                .buildAndExpand()
+                .toUri();
 
         RestClient.RequestHeadersUriSpec requestHeadersUriSpec = Mockito.mock(RestClient.RequestHeadersUriSpec.class);
         when(restClient.get()).thenReturn(requestHeadersUriSpec);
@@ -54,13 +56,13 @@ class CustomerServiceTest {
         when(requestHeadersUriSpec.retrieve()).thenReturn(responseSpec);
 
         CustomerVm customer = new CustomerVm(
-            "john_doe",
-            "john.doe@example.com",
-            "John",
-            "Doe"
+                "john_doe",
+                "john.doe@example.com",
+                "John",
+                "Doe"
         );
         when(responseSpec.body(CustomerVm.class))
-            .thenReturn(customer);
+                .thenReturn(customer);
 
         CustomerVm result = customerService.getCustomer();
 

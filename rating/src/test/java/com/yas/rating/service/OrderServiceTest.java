@@ -6,9 +6,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.yas.rating.config.ServiceUrlConfig;
+import com.yas.commonlibrary.config.ServiceUrlConfig;
 import com.yas.rating.viewmodel.OrderExistsByProductAndUserGetVm;
+
 import java.net.URI;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,11 +49,11 @@ class OrderServiceTest {
 
         when(serviceUrlConfig.order()).thenReturn(ORDER_URL);
         URI url = UriComponentsBuilder
-            .fromHttpUrl(serviceUrlConfig.order())
-            .path("/storefront/orders/completed")
-            .queryParam("productId", "1")
-            .buildAndExpand()
-            .toUri();
+                .fromHttpUrl(serviceUrlConfig.order())
+                .path("/storefront/orders/completed")
+                .queryParam("productId", "1")
+                .buildAndExpand()
+                .toUri();
 
         setUpSecurityContext("test");
         RestClient.RequestHeadersUriSpec requestHeadersUriSpec = Mockito.mock(RestClient.RequestHeadersUriSpec.class);
@@ -61,9 +63,9 @@ class OrderServiceTest {
         when(requestHeadersUriSpec.retrieve()).thenReturn(responseSpec);
 
         OrderExistsByProductAndUserGetVm orderExistsByProductAndUserGetVm
-            = new OrderExistsByProductAndUserGetVm(true);
+                = new OrderExistsByProductAndUserGetVm(true);
         when(responseSpec.body(OrderExistsByProductAndUserGetVm.class))
-            .thenReturn(orderExistsByProductAndUserGetVm);
+                .thenReturn(orderExistsByProductAndUserGetVm);
 
         OrderExistsByProductAndUserGetVm result = orderService.checkOrderExistsByProductAndUserWithStatus(1L);
 
@@ -73,7 +75,7 @@ class OrderServiceTest {
 
     @Test
     void testHandleFallback_whenNewOrderExistsByProductAndUserGetVm_returnOrderExistsByProductAndUserGetVm()
-        throws Throwable {
+            throws Throwable {
 
         OrderExistsByProductAndUserGetVm result = orderService.handleFallback(mock(Throwable.class));
         assertThat(result.isPresent()).isFalse();

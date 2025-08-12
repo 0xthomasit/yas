@@ -2,7 +2,13 @@ services:
    search:
       build: ./search
       image: ghcr.io/nashtech-garage/yas-search:latest
-      entrypoint: [ "./wait-for-it.sh", "elasticsearch:9200", "--timeout=300", "--", "java", "-jar", "/app.jar" ]
+#      entrypoint: [ "./wait-for-it.sh", "elasticsearch:9200", "--timeout=300", "--", "java", "-jar", "/app.jar" ]
+      entrypoint:
+         [ "sh", "-c",
+            "./wait-for-it.sh elasticsearch:9200 --timeout=300 && \
+            ./wait-for-it.sh collector:5555 --timeout=180 && \
+            exec java -jar /app.jar"
+         ]
       environment:
          - ELASTICSEARCH_URL=${ELASTICSEARCH_URL:-elasticsearch:9200}
          - SERVER_SERVLET_CONTEXT_PATH=/search

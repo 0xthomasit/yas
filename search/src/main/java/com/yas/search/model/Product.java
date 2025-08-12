@@ -14,6 +14,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.annotations.Setting;
 
 @Document(indexName = "product")
+//@Document(indexName = "product", createIndex = false)
 @Setting(settingPath = "esconfig/elastic-analyzer.json")
 @Builder
 @Getter

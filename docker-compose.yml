@@ -66,7 +66,15 @@ services:
    storefront:
       build: ./storefront-bff
       image: ghcr.io/nashtech-garage/yas-storefront-bff:latest
-      entrypoint: [ "./wait-for-it.sh", "identity:80", "--timeout=300", "--", "java", "-jar", "/app.jar" ]
+#      entrypoint: [ "./wait-for-it.sh", "identity:80", "--timeout=300", "--", "java", "-jar", "/app.jar" ]
+      entrypoint:
+         [ "sh", "-c",
+            "for i in $(seq 1 180); do \
+               wget -qO- http://identity/realms/Yas/.well-known/openid-configuration >/dev/null && break; \
+               echo 'waiting for Keycloak OIDC discovery...'; sleep 2; \
+            done; \
+            exec java -jar /app.jar"
+         ]
       environment:
          - SPRING_PROFILES_ACTIVE=prod
          - YAS_SERVICES_CUSTOMER

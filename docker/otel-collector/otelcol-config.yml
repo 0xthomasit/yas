@@ -40,11 +40,11 @@ exporters:
       enabled: true
       num_consumers: 2
       queue_size: 4096
-  loki:
-    endpoint: http://loki:3100/loki/api/v1/push
-    default_labels_enabled:
-      exporter: true
-      job: true
+  # New: use OTLP/HTTP to Loki instead of Loki
+  otlphttp/loki:
+    endpoint: http://loki:3100/otlp   # don't add /v1/logs; the exporter appends it
+    tls:
+      insecure: true  # for http (local). Remove if https.
 processors:
   batch:
     # timeout: 1s
@@ -91,7 +91,7 @@ service:
     logs:
       receivers: [otlp]
       processors: [resource/loki, batch]
-      exporters: [loki]
+      exporters: [otlphttp/loki]
   telemetry:
     metrics:
       readers:

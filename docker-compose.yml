@@ -25,6 +25,9 @@ services:
          interval: 5s
          timeout: 3s
          retries: 60
+      depends_on:
+         postgres:
+            condition: service_healthy
       volumes:
          - ./identity/realm-export.json:/opt/keycloak/data/import/realm-export.json
          - ./identity/themes/yas/theme:/opt/keycloak/themes
@@ -68,12 +71,11 @@ services:
       image: ghcr.io/nashtech-garage/yas-storefront-bff:latest
 #      entrypoint: [ "./wait-for-it.sh", "identity:80", "--timeout=300", "--", "java", "-jar", "/app.jar" ]
       entrypoint:
-         [ "sh", "-c",
+         [  "sh", "-c",
             "for i in $(seq 1 180); do \
                wget -qO- http://identity/realms/Yas/.well-known/openid-configuration >/dev/null && break; \
                echo 'waiting for Keycloak OIDC discovery...'; sleep 2; \
-            done; \
-            exec java -jar /app.jar"
+            done; exec java -jar /app.jar"
          ]
       environment:
          - SPRING_PROFILES_ACTIVE=prod
@@ -136,6 +138,9 @@ services:
          - OTEL_JAVAAGENT_LOGGING
          - OTEL_JAVAAGENT_ENABLED
          - OTEL_JAVAAGENT_DEBUG
+      depends_on:
+         postgres:
+            condition: service_healthy
       volumes:
          - ./docker/libs/opentelemetry-javaagent.jar:/opentelemetry-javaagent.jar
          - ./deployment/app-config:/app-config
@@ -199,6 +204,9 @@ services:
          - OTEL_JAVAAGENT_LOGGING
          - OTEL_JAVAAGENT_ENABLED
          - OTEL_JAVAAGENT_DEBUG
+      depends_on:
+         postgres:
+            condition: service_healthy
       volumes:
          - ./docker/libs/opentelemetry-javaagent.jar:/opentelemetry-javaagent.jar
          - ./deployment/app-config:/app-config
@@ -227,6 +235,9 @@ services:
          - OTEL_JAVAAGENT_LOGGING
          - OTEL_JAVAAGENT_ENABLED
          - OTEL_JAVAAGENT_DEBUG
+      depends_on:
+         postgres:
+            condition: service_healthy
       volumes:
          - ./docker/libs/opentelemetry-javaagent.jar:/opentelemetry-javaagent.jar
          - ./deployment/app-config:/app-config
@@ -257,6 +268,9 @@ services:
          - OTEL_JAVAAGENT_LOGGING
          - OTEL_JAVAAGENT_ENABLED
          - OTEL_JAVAAGENT_DEBUG
+      depends_on:
+         postgres:
+            condition: service_healthy
       volumes:
          - ./docker/libs/opentelemetry-javaagent.jar:/opentelemetry-javaagent.jar
          - ./deployment/app-config:/app-config
@@ -321,6 +335,9 @@ services:
          - OTEL_JAVAAGENT_DEBUG
          - YAS_CURRENCY_UNIT
          - YAS_PRICE_INCLUDES_TAX
+      depends_on:
+         postgres:
+            condition: service_healthy
       volumes:
          - ./docker/libs/opentelemetry-javaagent.jar:/opentelemetry-javaagent.jar
          - ./deployment/app-config:/app-config
@@ -348,6 +365,9 @@ services:
          - OTEL_JAVAAGENT_LOGGING
          - OTEL_JAVAAGENT_ENABLED
          - OTEL_JAVAAGENT_DEBUG
+      depends_on:
+         postgres:
+            condition: service_healthy
       volumes:
          - ./docker/libs/opentelemetry-javaagent.jar:/opentelemetry-javaagent.jar
          - ./deployment/app-config:/app-config
@@ -377,6 +397,9 @@ services:
          - OTEL_JAVAAGENT_LOGGING
          - OTEL_JAVAAGENT_ENABLED
          - OTEL_JAVAAGENT_DEBUG
+      depends_on:
+         postgres:
+            condition: service_healthy
       volumes:
          - ./docker/libs/opentelemetry-javaagent.jar:/opentelemetry-javaagent.jar
          - ./deployment/app-config:/app-config
@@ -405,6 +428,9 @@ services:
          - OTEL_JAVAAGENT_LOGGING
          - OTEL_JAVAAGENT_ENABLED
          - OTEL_JAVAAGENT_DEBUG
+      depends_on:
+         postgres:
+            condition: service_healthy
       volumes:
          - ./docker/libs/opentelemetry-javaagent.jar:/opentelemetry-javaagent.jar
          - ./deployment/app-config:/app-config
@@ -433,6 +459,9 @@ services:
          - OTEL_JAVAAGENT_LOGGING
          - OTEL_JAVAAGENT_ENABLED
          - OTEL_JAVAAGENT_DEBUG
+      depends_on:
+         postgres:
+            condition: service_healthy
       volumes:
          - ./docker/libs/opentelemetry-javaagent.jar:/opentelemetry-javaagent.jar
          - ./deployment/app-config:/app-config
@@ -462,6 +491,9 @@ services:
          - OTEL_JAVAAGENT_LOGGING
          - OTEL_JAVAAGENT_ENABLED
          - OTEL_JAVAAGENT_DEBUG
+      depends_on:
+         postgres:
+            condition: service_healthy
       volumes:
          - ./docker/libs/opentelemetry-javaagent.jar:/opentelemetry-javaagent.jar
          - ./deployment/app-config:/app-config
@@ -572,19 +604,17 @@ services:
       image: quay.io/debezium/zookeeper:3.2.0.Final
       restart: always
       ports:
-         - 2181:2181
-         - 2888:2888
-         - 3888:3888
+         - "2181:2181"
+         - "2888:2888"
+         - "3888:3888"
       networks:
          - yas-network
    kafka:
       image: confluentinc/cp-kafka:7.9.2
       hostname: ${KAFKA_SERVICE_HOST}
-      depends_on:
-         - zookeeper
       ports:
          - ${KAFKA_SERVICE_PORT}:${KAFKA_SERVICE_PORT}
-         - 29092:29092
+         - "29092:29092"
       environment:
          - KAFKA_BROKER_ID
          - KAFKA_ZOOKEEPER_CONNECT
@@ -592,14 +622,21 @@ services:
          - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
          - KAFKA_INTER_BROKER_LISTENER_NAME
          - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
+      depends_on:
+         - zookeeper
+      healthcheck:
+         test: [ "CMD-SHELL", "nc -z localhost 9092 || exit 1" ]
+         interval: 10s
+         timeout: 5s
+         retries: 20
       networks:
          - yas-network
    kafka-connect:
       image: quay.io/debezium/connect:3.2.0.Final
       restart: always
       ports:
-         - 8083:8083
-         - 5005:5005
+         - "8083:8083"
+         - "5005:5005"
       depends_on:
          - kafka
       environment:
@@ -616,7 +653,7 @@ services:
          DYNAMIC_CONFIG_ENABLED: 'true'
          KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
       ports:
-         - 8089:8080
+         - "8089:8080"
       depends_on:
          - kafka
          - kafka-connect
@@ -626,7 +663,7 @@ services:
       image: redis:8.2.0-alpine
       restart: always
       ports:
-         - '6379:6379'
+         - "6379:6379"
       environment:
          - SPRING_DATA_REDIS_HOST
          - SPRING_DATA_REDIS_PORT

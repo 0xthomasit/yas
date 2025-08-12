@@ -36,10 +36,12 @@ public class ProductAttribute extends AbstractAuditEntity {
     @JoinColumn(name = "product_attribute_group_id")
     private ProductAttributeGroup productAttributeGroup;
 
+    @Builder.Default
     @OneToMany(mappedBy = "productAttribute")
     @JsonIgnore
     private List<ProductAttributeTemplate> productAttributeTemplates = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "productAttribute")
     private List<ProductAttributeValue> attributeValues = new ArrayList<>();
 

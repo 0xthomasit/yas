@@ -61,14 +61,14 @@ server {
 server {
   server_name backoffice;
   location / {
-    proxy_pass http://backoffice;
+    proxy_pass http://backoffice-nextjs:3000;
   }
 }
 
 server {
   server_name storefront;
   location / {
-    proxy_pass http://storefront;
+    proxy_pass http://storefront-nextjs:3000;
   }
 }
 

@@ -3,6 +3,7 @@ package com.yas.product.config;
 import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
@@ -20,18 +21,36 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         return http
+                // 🔐 AUTHORIZATION RULES
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/actuator/prometheus", "/actuator/health/**",
-                                "/swagger-ui", "/swagger-ui/**", "/error", "/v3/api-docs/**").permitAll()
+                        // ✅ PUBLIC ENDPOINTS (no authentication required)
+                        .requestMatchers("/actuator/prometheus", // Metrics endpoint
+                                "/actuator/health/**", // Health check
+                                "/swagger-ui", "/swagger-ui/**", // API documentation
+                                "/error",
+                                "/v3/api-docs/**"
+                        ).permitAll()
+
+                        // ✅ STOREFRONT ENDPOINTS (public access)
                         .requestMatchers("/storefront/**").permitAll()
+
+                        // 🔒 BACKOFFICE ENDPOINTS (admin only)
                         .requestMatchers("/backoffice/**").hasRole("ADMIN")
-                        .anyRequest().authenticated())
+
+                        // 🔒 ALL OTHER ENDPOINTS (authenticated users)
+                        .anyRequest().authenticated()
+                )
+                // 🎫 USE OAUTH2 JWT TOKENS from Keycloak
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .build();
     }
 
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverterForKeycloak() {
+        // 🎯 CONVERT KEYCLOAK ROLES TO SPRING SECURITY ROLES
+        // Keycloak JWT contains: {"realm_access": {"roles": ["ADMIN", "USER"]}}
+        // This converter extracts roles and adds "ROLE_" prefix
+        // Result: ROLE_ADMIN, ROLE_USER
         Converter<Jwt, Collection<GrantedAuthority>> jwtGrantedAuthoritiesConverter = jwt -> {
             Map<String, Collection<String>> realmAccess = jwt.getClaim("realm_access");
             Collection<String> roles = realmAccess.get("roles");

@@ -27,3 +27,14 @@ public class DatabaseAutoConfig {
         };
     }
 }
+
+/*
+    + groupId:
+        -
+
+    + artifactId:
+        _ Specific project / module within groupId (name of artifact).
+        _ Convention: unique name within groupId, descriptive of the project / module's function
+        _
+
+ */

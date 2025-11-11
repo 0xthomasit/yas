@@ -186,6 +186,7 @@ services:
       build: ./customer
       image: ghcr.io/nashtech-garage/yas-customer:latest
       environment:
+         - SPRING_PROFILES_ACTIVE=prod
          - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/customer
          - SERVER_SERVLET_CONTEXT_PATH=/customer
          - YAS_SERVICES_LOCATION
@@ -216,6 +217,7 @@ services:
       build: ./cart
       image: ghcr.io/nashtech-garage/yas-cart:latest
       environment:
+         - SPRING_PROFILES_ACTIVE=prod
          - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/cart
          - SERVER_SERVLET_CONTEXT_PATH=/cart
          - YAS_SERVICES_MEDIA
@@ -247,6 +249,7 @@ services:
       build: ./rating
       image: ghcr.io/nashtech-garage/yas-rating:latest
       environment:
+         - SPRING_PROFILES_ACTIVE=prod
          - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/rating
          - SERVER_SERVLET_CONTEXT_PATH=/rating
          - YAS_PUBLIC_URL=${YAS_PUBLIC_API_URL}/rating
@@ -280,6 +283,7 @@ services:
       build: ./order
       image: ghcr.io/nashtech-garage/yas-order:latest
       environment:
+         - SPRING_PROFILES_ACTIVE=prod
          - SPRING_DATASOURCE_URL=jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/order
          - SERVER_SERVLET_CONTEXT_PATH=/order
          - SERVER_PORT
@@ -313,6 +317,7 @@ services:
       build: ./payment
       image: ghcr.io/nashtech-garage/yas-payment:latest
       environment:
+         - SPRING_PROFILES_ACTIVE=prod
          - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/payment
          - SERVER_SERVLET_CONTEXT_PATH=/payment
          - YAS_PUBLIC_URL=${YAS_PUBLIC_API_URL}/payment
@@ -347,6 +352,7 @@ services:
       build: ./location
       image: ghcr.io/nashtech-garage/yas-location:latest
       environment:
+         - SPRING_PROFILES_ACTIVE=prod
          - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/location
          - SERVER_SERVLET_CONTEXT_PATH=/location
          - YAS_PUBLIC_URL=${YAS_PUBLIC_API_URL}/location
@@ -377,6 +383,7 @@ services:
       build: ./inventory
       image: ghcr.io/nashtech-garage/yas-inventory:latest
       environment:
+         - SPRING_PROFILES_ACTIVE=prod
          - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/inventory
          - SERVER_SERVLET_CONTEXT_PATH=/inventory
          - YAS_PUBLIC_URL=${YAS_PUBLIC_API_URL}/inventory
@@ -409,6 +416,7 @@ services:
       build: ./promotion
       image: ghcr.io/nashtech-garage/yas-promotion:latest
       environment:
+         - SPRING_PROFILES_ACTIVE=prod
          - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/promotion
          - SERVER_SERVLET_CONTEXT_PATH=/promotion
          - YAS_PUBLIC_URL=${YAS_PUBLIC_API_URL}/promotion
@@ -440,6 +448,7 @@ services:
       build: ./tax
       image: ghcr.io/nashtech-garage/yas-tax:latest
       environment:
+         - SPRING_PROFILES_ACTIVE=prod
          - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/tax
          - SERVER_SERVLET_CONTEXT_PATH=/tax
          - YAS_PUBLIC_URL=${YAS_PUBLIC_API_URL}/tax
@@ -471,6 +480,7 @@ services:
       build: ./sampledata
       image: ghcr.io/nashtech-garage/yas-sampledata:latest
       environment:
+         - SPRING_PROFILES_ACTIVE=prod
          - SPRING_DATASOURCE_PRODUCT_URL=jdbc:postgresql://postgres:5432/product
          - SPRING_DATASOURCE_MEDIA_URL=jdbc:postgresql://postgres:5432/media
          - SERVER_SERVLET_CONTEXT_PATH=/sampledata

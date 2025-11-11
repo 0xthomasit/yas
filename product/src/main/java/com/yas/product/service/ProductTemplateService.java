@@ -17,12 +17,14 @@ import com.yas.product.viewmodel.producttemplate.ProductTemplateGetVm;
 import com.yas.product.viewmodel.producttemplate.ProductTemplateListGetVm;
 import com.yas.product.viewmodel.producttemplate.ProductTemplatePostVm;
 import com.yas.product.viewmodel.producttemplate.ProductTemplateVm;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -86,7 +88,7 @@ public class ProductTemplateService {
         ProductTemplate productTemplate = new ProductTemplate();
         productTemplate.setName(productTemplatePostVm.name());
         List<ProductAttributeTemplate> productAttributeTemplates
-            = setAttributeTemplates(productTemplatePostVm.productAttributeTemplates(), productTemplate);
+                = setAttributeTemplates(productTemplatePostVm.productAttributeTemplates(), productTemplate);
         ProductTemplate mainSavedProductTemplate = productTemplateRepository.save(productTemplate);
         productAttributeTemplateRepository.saveAll(productAttributeTemplates);
         return getProductTemplate(mainSavedProductTemplate.getId());
@@ -96,11 +98,11 @@ public class ProductTemplateService {
         ProductTemplate productTemplate = productTemplateRepository.findById(productTemplateId).orElseThrow(()
                 -> new NotFoundException(Constants.ErrorCode.PRODUCT_TEMPlATE_IS_NOT_FOUND, productTemplateId));
         List<ProductAttributeTemplate> attributeTemplateList
-            = productAttributeTemplateRepository.findAllByProductTemplateId(productTemplateId);
+                = productAttributeTemplateRepository.findAllByProductTemplateId(productTemplateId);
         productAttributeTemplateRepository.deleteAllByIdInBatch(
-            attributeTemplateList.stream().map(ProductAttributeTemplate::getId).toList());
+                attributeTemplateList.stream().map(ProductAttributeTemplate::getId).toList());
         List<ProductAttributeTemplate> productAttributeTemplates
-            = setAttributeTemplates(productTemplatePostVm.productAttributeTemplates(), productTemplate);
+                = setAttributeTemplates(productTemplatePostVm.productAttributeTemplates(), productTemplate);
         productTemplate.setName(productTemplatePostVm.name());
         productTemplateRepository.save(productTemplate);
         productAttributeTemplateRepository.saveAll(productAttributeTemplates);
@@ -112,13 +114,13 @@ public class ProductTemplateService {
     ) {
         List<ProductAttributeTemplate> attributeTemplateList = new ArrayList<>();
         List<Long> idAttributes = new ArrayList<>(productAttributeTemplates
-            .stream().map(ProductAttributeTemplatePostVm::productAttributeId).toList());
+                .stream().map(ProductAttributeTemplatePostVm::productAttributeId).toList());
         if (CollectionUtils.isNotEmpty(idAttributes)) {
             List<Long> attributes = productTemplate
                     .getProductAttributeTemplates()
                     .stream()
                     .map(productAttributeTemplate
-                        -> productAttributeTemplate.getProductAttribute().getId()).sorted().toList();
+                            -> productAttributeTemplate.getProductAttribute().getId()).sorted().toList();
             if (!CollectionUtils.isEqualCollection(attributes, idAttributes.stream().sorted().toList())) {
                 List<ProductAttribute> productAttributes = productAttributeRepository.findAllById(idAttributes);
                 if (productAttributes.isEmpty()) {

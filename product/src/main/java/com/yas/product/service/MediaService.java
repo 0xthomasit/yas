@@ -17,11 +17,40 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
+/* Circuit Breaker Pattern (Resilience) */
 @Service
 @RequiredArgsConstructor
 public class MediaService extends AbstractCircuitBreakFallbackHandler {
+
     private final RestClient restClient;
     private final ServiceUrlConfig serviceUrlConfig;
+
+    // 🔄 RETRY: Try up to 3 times if request fails
+    @Retry(name = "restApi")
+    // 🛡️ CIRCUIT BREAKER: Stop making requests if service is down
+    // - If 50% of requests fail, circuit opens
+    // - After opening, immediately return fallback without calling service
+    // - Periodically test if service is back up
+    @CircuitBreaker(name = "restCircuitBreaker", fallbackMethod = "handleMediaFallback")
+    public NoFileMediaVm getMedia(Long id) {
+        // 🎯 CALL MEDIA MICROSERVICE
+        // Problem: What if Media service is down or slow?
+        // Solution: Circuit breaker prevents cascading failures
+        if (id == null) {
+            //TODO return default no image url
+            return new NoFileMediaVm(null, "", "", "", "");
+        }
+        final URI url = UriComponentsBuilder
+                .fromHttpUrl(serviceUrlConfig.media())
+                .path("/medias/{id}")
+                .buildAndExpand(id)
+                .toUri();
+
+        return restClient.get()
+                .uri(url)
+                .retrieve()
+                .body(NoFileMediaVm.class);
+    }
 
     @Retry(name = "restApi")
     @CircuitBreaker(name = "restCircuitBreaker", fallbackMethod = "handleMediaFallback")
@@ -45,21 +74,6 @@ public class MediaService extends AbstractCircuitBreakFallbackHandler {
     }
 
     @Retry(name = "restApi")
-    @CircuitBreaker(name = "restCircuitBreaker", fallbackMethod = "handleMediaFallback")
-    public NoFileMediaVm getMedia(Long id) {
-        if (id == null) {
-            //TODO return default no image url
-            return new NoFileMediaVm(null, "", "", "", "");
-        }
-        final URI url = UriComponentsBuilder.fromHttpUrl(serviceUrlConfig.media())
-                .path("/medias/{id}").buildAndExpand(id).toUri();
-        return restClient.get()
-                .uri(url)
-                .retrieve()
-                .body(NoFileMediaVm.class);
-    }
-
-    @Retry(name = "restApi")
     @CircuitBreaker(name = "restCircuitBreaker", fallbackMethod = "handleBodilessFallback")
     public void removeMedia(Long id) {
         final URI url = UriComponentsBuilder.fromHttpUrl(serviceUrlConfig.media()).path("/medias/{id}")
@@ -73,7 +87,10 @@ public class MediaService extends AbstractCircuitBreakFallbackHandler {
                 .body(Void.class);
     }
 
+    // ⚠️ FALLBACK: Called when circuit is open or request fails
     private NoFileMediaVm handleMediaFallback(Throwable throwable) throws Throwable {
+        // Log error and rethrow
+        // In production, you might return a default image instead
         return handleTypedFallback(throwable);
     }
 }

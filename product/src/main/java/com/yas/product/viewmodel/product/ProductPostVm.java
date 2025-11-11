@@ -6,10 +6,13 @@ import com.yas.product.model.enumeration.DimensionUnit;
 import com.yas.product.validation.ValidateProductPrice;
 import com.yas.product.viewmodel.productoption.ProductOptionValuePostVm;
 import jakarta.validation.constraints.NotBlank;
+
 import java.util.List;
 
+// All fields, regardless of their access modifier (public, private, protected, or package-private),
+// will be automatically detected and considered for inclusion in the JSON output or for mapping from JSON input.
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-@JsonSerialize
+@JsonSerialize // used to specify custom serializer to marshall the json object.
 public record ProductPostVm(
         @NotBlank String name,
         @NotBlank String slug,

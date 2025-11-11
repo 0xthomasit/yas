@@ -15,8 +15,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,6 +27,7 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "product")
+// IMPORTANT: Maps this class to the "product" database table. Ensures the entity is persisted correctly.
 @lombok.Getter
 @lombok.Setter
 @NoArgsConstructor
@@ -32,59 +35,90 @@ import lombok.Setter;
 @Builder
 @SuppressWarnings("javaarchitecture:S7027")
 public class Product extends AbstractAuditEntity {
+
+    // Inherits all 4 audit fields (in AbstractAuditEntity) automatically!
+
     @OneToMany(mappedBy = "product")
     @Builder.Default
     List<ProductRelated> relatedProducts = new ArrayList<>();
+
+    // IMPORTANT: Auto-generates the primary key using database identity. Efficient for most RDBMS like PostgreSQL.
+    // 🔑 PRIMARY KEY - Unique identifier for each product
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
-    private String shortDescription;
-    private String description;
-    private String specification;
-    private String sku;
-    private String gtin;
-    private String slug;
-    private Double price;
-    private boolean hasOptions;
-    private boolean isAllowedToOrder;
-    private boolean isPublished;
-    private boolean isFeatured;
-    private boolean isVisibleIndividually;
-    private boolean stockTrackingEnabled;
-    private Long stockQuantity;
-    private Long taxClassId;
-    private String metaTitle;
-    private String metaKeyword;
-    private String metaDescription;
-    private Long thumbnailMediaId;
-    private Double weight;
-    @Enumerated(EnumType.STRING)
-    private DimensionUnit dimensionUnit;
-    private Double length;
-    private Double width;
-    private Double height;
-    @ManyToOne
+
+    // 📝 BASIC PRODUCT INFO
+    private String name; // Product name (e.g., "iPhone 15 Pro")
+    private String sku; // Stock Keeping Unit - unique identifier
+    private String gtin; // Global Trade Item Number (barcode)
+    private String slug; // URL-friendly name (e.g., "iphone-15-pro")
+    private Double price; // Product price
+
+    // 🎨 PRODUCT DETAILS
+    private String shortDescription; // Brief description for listings
+    private String description; // Full product description
+    private String specification; // Technical specifications
+
+    // 🏷️ PRODUCT RELATIONSHIPS
+    @ManyToOne // Many products can belong to one brand
     @JoinColumn(name = "brand_id")
-    private Brand brand;
+    private Brand brand; // e.g., Apple, Samsung
+
+    // 📂 CATEGORY MAPPING (One product can be in multiple categories)
     @OneToMany(mappedBy = "product", cascade = {CascadeType.PERSIST})
     @Builder.Default
     private List<ProductCategory> productCategories = new ArrayList<>();
+
+    // 🖼️ MEDIA MANAGEMENT
+    private Long thumbnailMediaId; // Main product image
+    @OneToMany(mappedBy = "product", cascade = {CascadeType.PERSIST})
+    @Builder.Default
+    private List<ProductImage> productImages = new ArrayList<>(); // Gallery images
+
+    // 🎛️ PRODUCT VARIANTS (e.g., iPhone in different colors/storage)
+    @ManyToOne
+    @JoinColumn(name = "parent_id")
+    private Product parent; // Link to parent product
+
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.REMOVE)
+    @JsonIgnore
+    @Builder.Default
+    private List<Product> products = new ArrayList<>(); // Child variants
+
     @OneToMany(mappedBy = "product")
     @JsonIgnore
     @Builder.Default
     private List<ProductAttributeValue> attributeValues = new ArrayList<>();
-    @OneToMany(mappedBy = "product", cascade = {CascadeType.PERSIST})
-    @Builder.Default
-    private List<ProductImage> productImages = new ArrayList<>();
-    @ManyToOne
-    @JoinColumn(name = "parent_id")
-    private Product parent;
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.REMOVE)
-    @JsonIgnore
-    @Builder.Default
-    private List<Product> products = new ArrayList<>();
-    private boolean taxIncluded;
+
+    // 📊 PRODUCT STATUS FLAGS
+    private boolean hasOptions; // Does product have variants?
+    private boolean isAllowedToOrder; // Can customers order this?
+    private boolean isPublished; // Is product visible to customers?
+    private boolean isFeatured; // Show on homepage?
+    private boolean isVisibleIndividually; // Show as separate product?
+    private boolean stockTrackingEnabled; // Track inventory?
+
+    // 📦 INVENTORY
+    private Long stockQuantity;       // How many items in stock
+
+    // 💰 TAX & PRICING
+    private Long taxClassId;          // Tax category
+    private boolean taxIncluded;      // Is tax included in price?
+
+    // 📏 PHYSICAL DIMENSIONS (for shipping calculations)
+    private Double weight;
+
+    @Enumerated(EnumType.STRING)
+    private DimensionUnit dimensionUnit;  // CM or INCH
+    private Double length;
+    private Double width;
+    private Double height;
+
+    // 🔍 SEO (Search Engine Optimization)
+    private String metaTitle;         // Title for search engines
+    private String metaKeyword;       // Keywords for SEO
+    private String metaDescription;   // Description for search results
 
     @Override
     public boolean equals(Object o) {

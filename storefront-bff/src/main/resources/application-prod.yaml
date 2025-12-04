@@ -1,5 +1,6 @@
 server:
    port: 8087
+   forward-headers-strategy: framework
 spring:
    application:
       name: storefront-bff
@@ -16,7 +17,7 @@ spring:
                api-client:
                   provider: keycloak
                   client-id: storefront-bff
-                  client-secret: ZrU9I0q2uXBglBnmvyJdkl1lf0ncr8tn #gitleaks:allow
+                  client-secret: W6FudoS8wOW117o2YR1QcLIZdGxQXEiO #gitleaks:allow
                   scope: openid, profile, email, roles
    data:
       redis:
@@ -43,28 +44,30 @@ spring:
          on-profile: "prod"
    cloud:
       gateway:
-         default-filters:
-            - SaveSession
-         routes:
-            # Changes for your local development should not be committed
-            - id: api_servicename_local
-              uri: http://localhost:8081
-              predicates:
-                 - Path=/api/servicename/**
-              filters:
-                 - TokenRelay=
-                 - StripPrefix=1
-            - id: api
-              uri: http://api.yas.local
-              predicates:
-                 - Path=/api/**
-              filters:
-                 - TokenRelay=
-                 - StripPrefix=1
-            - id: nextjs
-              uri: http://localhost:3000
-              predicates:
-                 - Path=/**
+         server:
+            webflux:
+               default-filters:
+                  - SaveSession
+               routes:
+                  # Changes for your local development should not be committed
+                  -  id: api_servicename_local
+                     uri: http://localhost:8081
+                     predicates:
+                        - Path=/api/servicename/**
+                     filters:
+                        - TokenRelay=
+                        - StripPrefix=1
+                  -  id: api
+                     uri: http://api.yas.local
+                     predicates:
+                        - Path=/api/**
+                     filters:
+                        - TokenRelay=
+                        - StripPrefix=1
+                  -  id: nextjs
+                     uri: http://localhost:3000
+                     predicates:
+                        - Path=/**
 ---
 spring:
    config:
@@ -72,21 +75,23 @@ spring:
          on-profile: "prod"
    cloud:
       gateway:
-         default-filters:
-            - SaveSession
-         routes:
-            - id: api
-              uri: http://nginx
-              predicates:
-                 - Path=/api/**
-              filters:
-                 - DedupeResponseHeader=Origin Access-Control-Request-Method Access-Control-Request-Headers
-                 - TokenRelay=
-                 - StripPrefix=1
-            - id: nextjs
-              uri: http://storefront-nextjs:3000
-              predicates:
-                 - Path=/**
+         server:
+            webflux:
+               default-filters:
+                  - SaveSession
+               routes:
+                  -  id: api
+                     uri: http://nginx
+                     predicates:
+                        - Path=/api/**
+                     filters:
+                        - DedupeResponseHeader=Origin Access-Control-Request-Method Access-Control-Request-Headers
+                        - TokenRelay=
+                        - StripPrefix=1
+                  -  id: nextjs
+                     uri: http://storefront-nextjs:3000
+                     predicates:
+                        - Path=/**
 ---
 yas:
    services:

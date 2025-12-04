@@ -7,7 +7,7 @@ credentials:
     password: LarUmB3A49NTg9YmgW4=
   keycloak:
     backofficeBffClientSecret: TVacLC0cQ8tiiEKiTVerTb2YvwQ1TRJF
-    storefrontBffClientSecret: ZrU9I0q2uXBglBnmvyJdkl1lf0ncr8tn
+    storefrontBffClientSecret: W6FudoS8wOW117o2YR1QcLIZdGxQXEiO
     customerManagementClientSecret: NKAr3rnjwm9jlakgKpelukZGFaHYqIWE
   redis:
     password: redis

@@ -74,7 +74,7 @@ public class ProductCdcConsumerTest extends CdcConsumerTest<ProductMsgKey, Produ
 
         // When
         // Simulate Product Detail API response
-        final URI url = UriComponentsBuilder.fromHttpUrl(serviceUrlConfig.product())
+        final URI url = UriComponentsBuilder.fromUriString(serviceUrlConfig.product())
                 .path(STOREFRONT_PRODUCTS_ES_PATH)
                 .buildAndExpand(productId)
                 .toUri();
@@ -108,7 +108,7 @@ public class ProductCdcConsumerTest extends CdcConsumerTest<ProductMsgKey, Produ
 
         // When
         // Simulate Product Detail API throw errors
-        final URI url = UriComponentsBuilder.fromHttpUrl(serviceUrlConfig.product())
+        final URI url = UriComponentsBuilder.fromUriString(serviceUrlConfig.product())
                 .path(STOREFRONT_PRODUCTS_ES_PATH)
                 .buildAndExpand(productId)
                 .toUri();
@@ -142,7 +142,7 @@ public class ProductCdcConsumerTest extends CdcConsumerTest<ProductMsgKey, Produ
 
         // When
         // Simulate Product Detail API response
-        final URI url = UriComponentsBuilder.fromHttpUrl(serviceUrlConfig.product())
+        final URI url = UriComponentsBuilder.fromUriString(serviceUrlConfig.product())
                 .path(STOREFRONT_PRODUCTS_ES_PATH)
                 .buildAndExpand(productId)
                 .toUri();
@@ -182,7 +182,7 @@ public class ProductCdcConsumerTest extends CdcConsumerTest<ProductMsgKey, Produ
 
         // When
         // Simulate Product Detail API response
-        final URI url = UriComponentsBuilder.fromHttpUrl(serviceUrlConfig.product())
+        final URI url = UriComponentsBuilder.fromUriString(serviceUrlConfig.product())
                 .path(STOREFRONT_PRODUCTS_ES_PATH)
                 .buildAndExpand(productId)
                 .toUri();

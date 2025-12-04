@@ -25,6 +25,7 @@ public class CountryServiceTest {
 
     @Autowired
     private CountryRepository countryRepository;
+
     @Autowired
     private CountryService countryService;
     private Country country1;

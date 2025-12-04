@@ -64,7 +64,7 @@ class LocationServiceTest {
                 .build();
 
         final URI url = UriComponentsBuilder
-                .fromHttpUrl(serviceUrlConfig.location())
+                .fromUriString(serviceUrlConfig.location())
                 .path("/storefront/addresses/{id}")
                 .buildAndExpand(addressId)
                 .toUri();
@@ -109,7 +109,7 @@ class LocationServiceTest {
                 .build();
 
         final URI url = UriComponentsBuilder
-                .fromHttpUrl(serviceUrlConfig.location())
+                .fromUriString(serviceUrlConfig.location())
                 .path("/storefront/addresses")
                 .buildAndExpand()
                 .toUri();
@@ -146,7 +146,7 @@ class LocationServiceTest {
         );
 
         final URI url = UriComponentsBuilder
-                .fromHttpUrl(serviceUrlConfig.location())
+                .fromUriString(serviceUrlConfig.location())
                 .path("/storefront/addresses/{id}")
                 .buildAndExpand(addressId)
                 .toUri();
@@ -165,7 +165,7 @@ class LocationServiceTest {
     void testDeleteAddress_ifNormalCase_shouldNoException() {
 
         Long addressId = 1L;
-        final URI url = UriComponentsBuilder.fromHttpUrl(serviceUrlConfig.location()).path("/storefront/addresses/{id}")
+        final URI url = UriComponentsBuilder.fromUriString(serviceUrlConfig.location()).path("/storefront/addresses/{id}")
                 .buildAndExpand(addressId).toUri();
 
         RestClient.RequestHeadersUriSpec requestHeadersUriSpec = Mockito.mock(RestClient.RequestHeadersUriSpec.class);

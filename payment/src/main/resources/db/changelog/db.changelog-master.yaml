@@ -1,7 +1,7 @@
 databaseChangeLog:
   - includeAll:
       path: db/changelog/ddl/
-      resourceComparator: org.liquibase.changelog.ChangeLogParameters$ChangeLogParametersComparator
+    #   resourceComparator: org.liquibase.changelog.ChangeLogParameters$ChangeLogParametersComparator
   - includeAll:
       path: db/changelog/data/
-      resourceComparator: org.liquibase.changelog.ChangeLogParameters$ChangeLogParametersComparator
+    #   resourceComparator: org.liquibase.changelog.ChangeLogParameters$ChangeLogParametersComparator

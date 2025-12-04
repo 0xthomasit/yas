@@ -11,7 +11,9 @@ import com.yas.recommendation.configuration.EmbeddingSearchConfiguration;
 import com.yas.recommendation.vector.common.document.BaseDocument;
 import com.yas.recommendation.vector.common.document.DocumentMetadata;
 import com.yas.recommendation.vector.common.formatter.DocumentFormatter;
+
 import java.util.Map;
+
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
@@ -19,7 +21,9 @@ import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.filter.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class BaseVectorRepositoryTest<D extends BaseDocument, E> {
 
     private final Class<D> docClass;
@@ -41,22 +45,22 @@ public class BaseVectorRepositoryTest<D extends BaseDocument, E> {
         this.docClass = docClass;
         this.documentMetadata = getDocumentMetadata();
         this.documentFormatter = documentMetadata
-            .documentFormatter()
-            .getDeclaredConstructor()
-            .newInstance();
+                .documentFormatter()
+                .getDeclaredConstructor()
+                .newInstance();
     }
 
     public DocumentMetadata getDocumentMetadata() {
-       assertTrue(
-           docClass.isAnnotationPresent(DocumentMetadata.class),
-           "Document must be annotated by 'DocumentMetadata'"
-       );
+        assertTrue(
+                docClass.isAnnotationPresent(DocumentMetadata.class),
+                "Document must be annotated by 'DocumentMetadata'"
+        );
         return docClass.getAnnotation(DocumentMetadata.class);
     }
 
     public void assertDocumentData(Document createdDoc, E entity) {
         var expectedContent = getFormatEntity(entity);
-        assertEquals(expectedContent, createdDoc.getContent(), "Document format must be formated at declared metadata");
+        assertEquals(expectedContent, createdDoc.getText(), "Document format must be formated at declared metadata");
         assertNotNull(createdDoc.getMetadata(), "Document's metadata must not be null");
         assertFalse(createdDoc.getMetadata().isEmpty(), "Document's metadata must not be empty");
 
@@ -66,19 +70,19 @@ public class BaseVectorRepositoryTest<D extends BaseDocument, E> {
     }
 
     public void assertSearchRequest(SearchRequest searchRequest, E entity) {
-        assertNotNull(searchRequest.query, "Search query must be created");
-        assertEquals(getFormatEntity(entity), searchRequest.query, "Search's Query must be formatted correctly");
+        assertNotNull(searchRequest.getQuery(), "Search query must be created");
+        assertEquals(getFormatEntity(entity), searchRequest.getQuery(), "Search's Query must be formatted correctly");
         assertEquals(searchRequest.getTopK(), embeddingSearchConf.topK(), "Search's top K must be configured");
         assertEquals(
-            searchRequest.getSimilarityThreshold(),
-            embeddingSearchConf.similarityThreshold(),
-            "Search's top K must be configured"
+                searchRequest.getSimilarityThreshold(),
+                embeddingSearchConf.similarityThreshold(),
+                "Search's top K must be configured"
         );
         assertNotNull(searchRequest.getFilterExpression(), "Search filter default must be specified");
         assertEquals(
-            searchRequest.getFilterExpression().type(),
-            Filter.ExpressionType.NE,
-            "Search filter default must be correctly"
+                searchRequest.getFilterExpression().type(),
+                Filter.ExpressionType.NE,
+                "Search filter default must be correctly"
         );
 
         Filter.Key key = (Filter.Key) searchRequest.getFilterExpression().left();
@@ -87,9 +91,9 @@ public class BaseVectorRepositoryTest<D extends BaseDocument, E> {
 
     private String getFormatEntity(E entity) {
         return documentFormatter.format(
-            objectMapper.convertValue(entity, Map.class),
-            documentMetadata.contentFormat(),
-            objectMapper
+                objectMapper.convertValue(entity, Map.class),
+                documentMetadata.contentFormat(),
+                objectMapper
         );
     }
 

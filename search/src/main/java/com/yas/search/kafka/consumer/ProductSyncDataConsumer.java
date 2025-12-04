@@ -47,18 +47,24 @@ public class ProductSyncDataConsumer extends BaseCdcConsumer<ProductMsgKey, Prod
     }
 
     public void sync(ProductMsgKey key, ProductCdcMessage productCdcMessage) {
-        boolean isHardDeleteEvent = productCdcMessage == null || DELETE.equals(productCdcMessage.getOp());
-        if (isHardDeleteEvent) {
+        if (productCdcMessage == null) {
             log.warn("Having hard delete event for product: '{}'", key.getId());
             productSyncDataService.deleteProduct(key.getId());
-        } else {
-            var operation = productCdcMessage.getOp();
-            var productId = key.getId();
-            switch (operation) {
-                case CREATE, READ -> productSyncDataService.createProduct(productId);
-                case UPDATE -> productSyncDataService.updateProduct(productId);
-                default -> log.warn("Unsupported operation '{}' for product: '{}'", operation, productId);
-            }
+            return;
+        }
+
+        if (DELETE.equals(productCdcMessage.getOp())) {
+            log.warn("Having hard delete event for product: '{}'", key.getId());
+            productSyncDataService.deleteProduct(key.getId());
+            return;
+        }
+
+        var operation = productCdcMessage.getOp();
+        var productId = key.getId();
+        switch (operation) {
+            case CREATE, READ -> productSyncDataService.createProduct(productId);
+            case UPDATE -> productSyncDataService.updateProduct(productId);
+            default -> log.warn("Unsupported operation '{}' for product: '{}'", operation, productId);
         }
     }
 }

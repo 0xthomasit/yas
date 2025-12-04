@@ -24,7 +24,7 @@ import com.yas.commonlibrary.model.AbstractAuditEntity;
 public class PaymentProvider extends AbstractAuditEntity implements Persistable<String> {
     @Id
     private String id;
-    private boolean enabled;
+    private boolean isEnabled;
     private String name;
     private String configureUrl;
     private String landingViewComponentName;

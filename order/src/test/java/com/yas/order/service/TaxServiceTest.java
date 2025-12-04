@@ -46,7 +46,7 @@ class TaxServiceTest {
         Long stateOrProvinceId = 3L;
         String zipCode = "TEST";
 
-        URI url = UriComponentsBuilder.fromHttpUrl(serviceUrlConfig.tax())
+        URI url = UriComponentsBuilder.fromUriString(serviceUrlConfig.tax())
                 .path("/backoffice/tax-rates/tax-percent")
                 .queryParam("taxClassId", taxClassId)
                 .queryParam("countryId", countryId)

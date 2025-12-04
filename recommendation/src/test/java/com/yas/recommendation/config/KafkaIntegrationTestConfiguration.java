@@ -1,6 +1,5 @@
 package com.yas.recommendation.config;
 
-import common.container.ContainerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
@@ -21,13 +20,17 @@ public class KafkaIntegrationTestConfiguration {
 
     @Bean
     @ServiceConnection
-    public KafkaContainer kafkaContainer(DynamicPropertyRegistry registry) {
-        return ContainerFactory.kafkaContainer(registry, kafkaVersion);
+    public KafkaContainer kafkaContainer() {
+        return new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:" + kafkaVersion));
     }
 
     @Bean
     @ServiceConnection
-    public PostgreSQLContainer pgvectorContainer(DynamicPropertyRegistry registry) {
-        return ContainerFactory.pgvector(registry, pgVectorVersion);
+    public PostgreSQLContainer<?> pgvectorContainer() {
+//        return ContainerFactory.pgvector(registry, pgVectorVersion);
+        return new PostgreSQLContainer<>("pgvector/pgvector:pg16")
+                .withDatabaseName("recommendation")
+                .withUsername("postgres")
+                .withPassword("postgres");
     }
 }

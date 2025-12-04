@@ -44,7 +44,7 @@ class CustomerServiceTest {
     void testGetCustomer_ifNormalCase_returnCustomerVm() {
 
         final URI url = UriComponentsBuilder
-                .fromHttpUrl(serviceUrlConfig.customer())
+                .fromUriString(serviceUrlConfig.customer())
                 .path("/storefront/customer/profile")
                 .buildAndExpand()
                 .toUri();

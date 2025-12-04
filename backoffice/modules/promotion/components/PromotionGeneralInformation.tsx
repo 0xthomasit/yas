@@ -72,17 +72,19 @@ const PromotionGeneralInformation = ({
     }
     return '';
   };
-  const validateDate = (otherDate: string, type: 'start' | 'end') => (value: string) => {
-    if (!otherDate) return true;
-    const currentDate = new Date(value);
-    const comparisonDate = new Date(otherDate);
+  const validateDate =
+    (otherDate: string, type: 'start' | 'end') =>
+    (value: string | number | boolean | number[] | undefined) => {
+      if (typeof value !== 'string' || !value || !otherDate) return true;
+      const currentDate = new Date(value);
+      const comparisonDate = new Date(otherDate);
 
-    if (type === 'start') {
-      return currentDate < comparisonDate || 'Start date must be less than end date';
-    } else {
-      return currentDate > comparisonDate || 'End date must be greater than start date';
-    }
-  };
+      if (type === 'start') {
+        return currentDate < comparisonDate || 'Start date must be less than end date';
+      } else {
+        return currentDate > comparisonDate || 'End date must be greater than start date';
+      }
+    };
 
   const onSelectProducts = (id: number) => {
     setValue('productIds', [...(products ?? []), id]);

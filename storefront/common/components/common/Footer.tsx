@@ -20,8 +20,12 @@ const Footer = () => {
         window.location.reload();
       }
     } catch (err: any) {
-      if (err.message == 403) toastError('Please login to add sample data!');
-      else toastError('Add sample data failed. Try again');
+      const message = err?.message?.toString();
+      if (message === 'Forbidden' || message === 'Unauthorized') {
+        toastError('Please login to add sample data!');
+      } else {
+        toastError('Add sample data failed. Try again');
+      }
     }
   };
   return (

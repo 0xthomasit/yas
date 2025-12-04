@@ -14,7 +14,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClient;
@@ -27,10 +27,10 @@ public class MediaServiceIT {
 
     @Autowired
     private MediaService mediaService;
-    @MockBean
+    @MockitoBean
     private RestClient restClient;
 
-    @MockBean
+    @MockitoBean
     private ServiceUrlConfig serviceUrlConfig;
 
     @BeforeEach

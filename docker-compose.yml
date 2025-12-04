@@ -1,16 +1,6 @@
 services:
-   nginx:
-      image: nginx:1.29.0
-      restart: unless-stopped
-      volumes:
-         - ./nginx/templates:/etc/nginx/templates
-         - ./nginx/configuration/custom_proxy_settings.conf:/etc/nginx/conf.d/custom_proxy_settings.conf
-      ports:
-         - "80:80"
-      networks:
-         - yas-network
    identity:
-      image: quay.io/keycloak/keycloak:26.3.2
+      image: quay.io/keycloak/keycloak:26.4.5
       command: 'start-dev --import-realm'
       environment:
          KC_BOOTSTRAP_ADMIN_USERNAME: admin
@@ -33,14 +23,71 @@ services:
          - ./identity/themes/yas/theme:/opt/keycloak/themes
       networks:
          - yas-network
+   postgres:
+      image: quay.io/debezium/postgres:18-alpine
+      build: ./docker/postgres
+      hostname: ${POSTGRES_HOST}
+      ports:
+         - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+      volumes:
+         - ./docker/postgres/postgresql.conf.sample:/usr/share/postgresql/postgresql.conf.sample
+         - ./postgres_init.sql:/docker-entrypoint-initdb.d/postgres_init.sql
+         - postgres:/var/lib/postgresql/data
+      command: postgres -c 'max_connections=500'
+      environment:
+         - POSTGRES_USER
+         - POSTGRES_PASSWORD
+      networks:
+         - yas-network
+      healthcheck:
+         test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d postgres" ]
+         interval: 5s
+         timeout: 3s
+         retries: 20
+   storefront-nextjs:
+      #      image: ghcr.io/nashtech-garage/yas-storefront:latest
+      #      profiles: ["excluded"]
+      build:
+         context: ./storefront
+         dockerfile: Dockerfile
+      networks:
+         - yas-network
+   backoffice-nextjs:
+      #      image: ghcr.io/nashtech-garage/yas-backoffice:latest
+      build:
+         context: ./backoffice
+         dockerfile: Dockerfile
+      networks:
+         - yas-network
+   nginx:
+      image: nginx:1.29.3
+      restart: unless-stopped
+      volumes:
+         - ./nginx/templates:/etc/nginx/templates
+         - ./nginx/configuration/custom_proxy_settings.conf:/etc/nginx/conf.d/custom_proxy_settings.conf
+      ports:
+         - "80:80"
+      networks:
+         - yas-network
+
    backoffice:
-      build: ./backoffice-bff
-      image: ghcr.io/nashtech-garage/yas-backoffice-bff:latest
-      entrypoint: [ "./wait-for-it.sh", "identity:80", "--timeout=300", "--", "java", "-jar", "/app.jar" ]
+   #      build: ./backoffice-bff
+   #      image: ghcr.io/nashtech-garage/yas-backoffice-bff:latest
+      build:
+         context: ./
+         dockerfile: backoffice-bff/Dockerfile
+   #      entrypoint: [ "./wait-for-it.sh", "identity:80", "--timeout=300", "--", "java", "-jar", "backoffice.jar" ]
+      entrypoint:
+         [ "sh", "-c",
+            "for i in $(seq 1 180); do \
+               wget -qO- http://identity/realms/Yas/.well-known/openid-configuration >/dev/null && break; \
+               echo 'waiting for Keycloak OIDC discovery...'; sleep 2; \
+               done; exec java -jar backoffice.jar"
+         ]
       environment:
          - SPRING_PROFILES_ACTIVE=prod
          - SERVER_PORT
-         - LOGGING_CONFIG
+   #         - LOGGING_CONFIG
          - JAVA_TOOL_OPTIONS
          - OTEL_EXPORTER_OTLP_ENDPOINT
          - OTEL_EXPORTER_OTLP_PROTOCOL
@@ -62,20 +109,20 @@ services:
          - ./deployment/app-config:/app-config
       networks:
          - yas-network
-   backoffice-nextjs:
-      image: ghcr.io/nashtech-garage/yas-backoffice:latest
-      networks:
-         - yas-network
    storefront:
-      build: ./storefront-bff
-      image: ghcr.io/nashtech-garage/yas-storefront-bff:latest
-#      entrypoint: [ "./wait-for-it.sh", "identity:80", "--timeout=300", "--", "java", "-jar", "/app.jar" ]
+   #      build: ./storefront-bff
+   #      image: ghcr.io/nashtech-garage/yas-storefront-bff:latest
+      build:
+         context: ./
+         dockerfile: storefront-bff/Dockerfile
+
+   #      entrypoint: [ "./wait-for-it.sh", "identity:80", "--timeout=300", "--", "java", "-jar", "/app.jar" ]
       entrypoint:
          [  "sh", "-c",
             "for i in $(seq 1 180); do \
                wget -qO- http://identity/realms/Yas/.well-known/openid-configuration >/dev/null && break; \
                echo 'waiting for Keycloak OIDC discovery...'; sleep 2; \
-            done; exec java -jar /app.jar"
+            done; exec java -jar storefront.jar"
          ]
       environment:
          - SPRING_PROFILES_ACTIVE=prod
@@ -90,7 +137,7 @@ services:
          - YAS_SERVICES_PAYMENT
          - YAS_SERVICES_SAMPLE_DATA
          - SERVER_PORT
-         - LOGGING_CONFIG
+   #         - LOGGING_CONFIG
          - JAVA_TOOL_OPTIONS
          - OTEL_EXPORTER_OTLP_ENDPOINT
          - OTEL_EXPORTER_OTLP_PROTOCOL
@@ -112,17 +159,20 @@ services:
          - ./deployment/app-config:/app-config
       networks:
          - yas-network
-   storefront-nextjs:
-      image: ghcr.io/nashtech-garage/yas-storefront:latest
-      networks:
-         - yas-network
-   media:
-      build: ./media
-      image: ghcr.io/nashtech-garage/yas-media:latest
+   sampledata:
+      #      build: ./sampledata
+      #      image: ghcr.io/nashtech-garage/yas-sampledata:latest
+      build:
+         context: ./
+         dockerfile: sampledata/Dockerfile
       environment:
-         - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/media
-         - SERVER_SERVLET_CONTEXT_PATH=/media
-         - YAS_PUBLIC_URL=${YAS_PUBLIC_API_URL}/media
+         - SPRING_PROFILES_ACTIVE=prod
+         - SPRING_ELASTICSEARCH_URIS=http://elasticsearch:9200
+         - SPRING_DATASOURCE_PRODUCT_URL=jdbc:postgresql://postgres:5432/product
+         - SPRING_DATASOURCE_MEDIA_URL=jdbc:postgresql://postgres:5432/media
+         - SERVER_SERVLET_CONTEXT_PATH=/sampledata
+         - YAS_PUBLIC_URL=${YAS_PUBLIC_API_URL}/sampledata
+         - YAS_SERVICES_SAMPLE_DATA
          - SERVER_PORT
          - LOGGING_CONFIG
          - JAVA_TOOL_OPTIONS
@@ -130,7 +180,7 @@ services:
          - OTEL_EXPORTER_OTLP_PROTOCOL
          - OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE
          - OTEL_RESOURCE_ATTRIBUTES
-         - OTEL_SERVICE_NAME=media-service
+         - OTEL_SERVICE_NAME=sampledata-service
          - OTEL_LOGS_EXPORTER
          - OTEL_TRACES_EXPORTER
          - OTEL_METRICS_EXPORTER
@@ -144,14 +194,18 @@ services:
       volumes:
          - ./docker/libs/opentelemetry-javaagent.jar:/opentelemetry-javaagent.jar
          - ./deployment/app-config:/app-config
-         - ./sampledata/images:/images
       networks:
          - yas-network
+
+
    product:
-      build: ./product
-      image: ghcr.io/nashtech-garage/yas-product:latest
+      build:
+         context: ./
+         dockerfile: product/Dockerfile
+   #      image: ghcr.io/nashtech-garage/yas-product:latest
       environment:
          - SPRING_PROFILES_ACTIVE=prod
+         - SPRING_DATASOURCE_URL=jdbc:postgresql://${POSTGRES_HOST:-postgres}:${POSTGRES_PORT:-5432}/product
          - POSTGRES_HOST=${POSTGRES_HOST:-postgres}
          - POSTGRES_PORT=${POSTGRES_PORT:-5432}
          - POSTGRES_USER=${POSTGRES_USER:-admin}
@@ -183,8 +237,11 @@ services:
          postgres:
             condition: service_healthy
    customer:
-      build: ./customer
-      image: ghcr.io/nashtech-garage/yas-customer:latest
+   #      build: ./customer
+   #      image: ghcr.io/nashtech-garage/yas-customer:latest
+      build:
+         context: ./
+         dockerfile: customer/Dockerfile
       environment:
          - SPRING_PROFILES_ACTIVE=prod
          - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/customer
@@ -214,8 +271,11 @@ services:
       networks:
          - yas-network
    cart:
-      build: ./cart
-      image: ghcr.io/nashtech-garage/yas-cart:latest
+   #      build: ./cart
+   #      image: ghcr.io/nashtech-garage/yas-cart:latest
+      build:
+         context: ./
+         dockerfile: cart/Dockerfile
       environment:
          - SPRING_PROFILES_ACTIVE=prod
          - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/cart
@@ -246,8 +306,11 @@ services:
       networks:
          - yas-network
    rating:
-      build: ./rating
-      image: ghcr.io/nashtech-garage/yas-rating:latest
+   #      build: ./rating
+   #      image: ghcr.io/nashtech-garage/yas-rating:latest
+      build:
+         context: ./
+         dockerfile: rating/Dockerfile
       environment:
          - SPRING_PROFILES_ACTIVE=prod
          - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/rating
@@ -279,9 +342,44 @@ services:
          - ./deployment/app-config:/app-config
       networks:
          - yas-network
+   location:
+      #      build: ./location
+      #      image: ghcr.io/nashtech-garage/yas-location:latest
+      build:
+         context: ./
+         dockerfile: location/Dockerfile
+      environment:
+         - SPRING_PROFILES_ACTIVE=prod
+         - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/location
+         - SERVER_SERVLET_CONTEXT_PATH=/location
+         - YAS_PUBLIC_URL=${YAS_PUBLIC_API_URL}/location
+         - SERVER_PORT
+         - LOGGING_CONFIG
+         - JAVA_TOOL_OPTIONS
+         - OTEL_EXPORTER_OTLP_ENDPOINT
+         - OTEL_EXPORTER_OTLP_PROTOCOL
+         - OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE
+         - OTEL_RESOURCE_ATTRIBUTES
+         - OTEL_SERVICE_NAME=location-service
+         - OTEL_LOGS_EXPORTER
+         - OTEL_TRACES_EXPORTER
+         - OTEL_METRICS_EXPORTER
+         - OTEL_INSTRUMENTATION_LOGBACK-MDC_ADD-BAGGAGE
+         - OTEL_JAVAAGENT_LOGGING
+         - OTEL_JAVAAGENT_ENABLED
+         - OTEL_JAVAAGENT_DEBUG
+      depends_on:
+         postgres:
+            condition: service_healthy
+      volumes:
+         - ./docker/libs/opentelemetry-javaagent.jar:/opentelemetry-javaagent.jar
+         - ./deployment/app-config:/app-config
+      networks:
+         - yas-network
    order:
-      build: ./order
-      image: ghcr.io/nashtech-garage/yas-order:latest
+      build:
+         context: ./
+         dockerfile: order/Dockerfile
       environment:
          - SPRING_PROFILES_ACTIVE=prod
          - SPRING_DATASOURCE_URL=jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/order
@@ -313,16 +411,14 @@ services:
          - ./deployment/app-config:/app-config
       networks:
          - yas-network
-   payment:
-      build: ./payment
-      image: ghcr.io/nashtech-garage/yas-payment:latest
+   media:
+      build:
+         context: ./
+         dockerfile: media/Dockerfile
       environment:
-         - SPRING_PROFILES_ACTIVE=prod
-         - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/payment
-         - SERVER_SERVLET_CONTEXT_PATH=/payment
-         - YAS_PUBLIC_URL=${YAS_PUBLIC_API_URL}/payment
-         - YAS_SERVICES_ORDER
-         - YAS_SERVICES_MEDIA
+         - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/media
+         - SERVER_SERVLET_CONTEXT_PATH=/media
+         - YAS_PUBLIC_URL=${YAS_PUBLIC_API_URL}/media
          - SERVER_PORT
          - LOGGING_CONFIG
          - JAVA_TOOL_OPTIONS
@@ -330,40 +426,7 @@ services:
          - OTEL_EXPORTER_OTLP_PROTOCOL
          - OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE
          - OTEL_RESOURCE_ATTRIBUTES
-         - OTEL_SERVICE_NAME=payment-service
-         - OTEL_LOGS_EXPORTER
-         - OTEL_TRACES_EXPORTER
-         - OTEL_METRICS_EXPORTER
-         - OTEL_INSTRUMENTATION_LOGBACK-MDC_ADD-BAGGAGE
-         - OTEL_JAVAAGENT_LOGGING
-         - OTEL_JAVAAGENT_ENABLED
-         - OTEL_JAVAAGENT_DEBUG
-         - YAS_CURRENCY_UNIT
-         - YAS_PRICE_INCLUDES_TAX
-      depends_on:
-         postgres:
-            condition: service_healthy
-      volumes:
-         - ./docker/libs/opentelemetry-javaagent.jar:/opentelemetry-javaagent.jar
-         - ./deployment/app-config:/app-config
-      networks:
-         - yas-network
-   location:
-      build: ./location
-      image: ghcr.io/nashtech-garage/yas-location:latest
-      environment:
-         - SPRING_PROFILES_ACTIVE=prod
-         - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/location
-         - SERVER_SERVLET_CONTEXT_PATH=/location
-         - YAS_PUBLIC_URL=${YAS_PUBLIC_API_URL}/location
-         - SERVER_PORT
-         - LOGGING_CONFIG
-         - JAVA_TOOL_OPTIONS
-         - OTEL_EXPORTER_OTLP_ENDPOINT
-         - OTEL_EXPORTER_OTLP_PROTOCOL
-         - OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE
-         - OTEL_RESOURCE_ATTRIBUTES
-         - OTEL_SERVICE_NAME=location-service
+         - OTEL_SERVICE_NAME=media-service
          - OTEL_LOGS_EXPORTER
          - OTEL_TRACES_EXPORTER
          - OTEL_METRICS_EXPORTER
@@ -377,11 +440,16 @@ services:
       volumes:
          - ./docker/libs/opentelemetry-javaagent.jar:/opentelemetry-javaagent.jar
          - ./deployment/app-config:/app-config
+         - ./sampledata/images:/images
       networks:
          - yas-network
+
    inventory:
-      build: ./inventory
-      image: ghcr.io/nashtech-garage/yas-inventory:latest
+      #      build: ./inventory
+      #      image: ghcr.io/nashtech-garage/yas-inventory:latest
+      build:
+         context: ./
+         dockerfile: inventory/Dockerfile
       environment:
          - SPRING_PROFILES_ACTIVE=prod
          - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/inventory
@@ -413,8 +481,11 @@ services:
       networks:
          - yas-network
    promotion:
-      build: ./promotion
-      image: ghcr.io/nashtech-garage/yas-promotion:latest
+      #      build: ./promotion
+      #      image: ghcr.io/nashtech-garage/yas-promotion:latest
+      build:
+         context: ./
+         dockerfile: promotion/Dockerfile
       environment:
          - SPRING_PROFILES_ACTIVE=prod
          - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/promotion
@@ -445,8 +516,11 @@ services:
       networks:
          - yas-network
    tax:
-      build: ./tax
-      image: ghcr.io/nashtech-garage/yas-tax:latest
+      #      build: ./tax
+      #      image: ghcr.io/nashtech-garage/yas-tax:latest
+      build:
+         context: ./
+         dockerfile: tax/Dockerfile
       environment:
          - SPRING_PROFILES_ACTIVE=prod
          - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/tax
@@ -476,140 +550,7 @@ services:
          - ./deployment/app-config:/app-config
       networks:
          - yas-network
-   sampledata:
-      build: ./sampledata
-      image: ghcr.io/nashtech-garage/yas-sampledata:latest
-      environment:
-         - SPRING_PROFILES_ACTIVE=prod
-         - SPRING_DATASOURCE_PRODUCT_URL=jdbc:postgresql://postgres:5432/product
-         - SPRING_DATASOURCE_MEDIA_URL=jdbc:postgresql://postgres:5432/media
-         - SERVER_SERVLET_CONTEXT_PATH=/sampledata
-         - YAS_PUBLIC_URL=${YAS_PUBLIC_API_URL}/sampledata
-         - YAS_SERVICES_SAMPLE_DATA
-         - SERVER_PORT
-         - LOGGING_CONFIG
-         - JAVA_TOOL_OPTIONS
-         - OTEL_EXPORTER_OTLP_ENDPOINT
-         - OTEL_EXPORTER_OTLP_PROTOCOL
-         - OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE
-         - OTEL_RESOURCE_ATTRIBUTES
-         - OTEL_SERVICE_NAME=sampledata-service
-         - OTEL_LOGS_EXPORTER
-         - OTEL_TRACES_EXPORTER
-         - OTEL_METRICS_EXPORTER
-         - OTEL_INSTRUMENTATION_LOGBACK-MDC_ADD-BAGGAGE
-         - OTEL_JAVAAGENT_LOGGING
-         - OTEL_JAVAAGENT_ENABLED
-         - OTEL_JAVAAGENT_DEBUG
-      depends_on:
-         postgres:
-            condition: service_healthy
-      volumes:
-         - ./docker/libs/opentelemetry-javaagent.jar:/opentelemetry-javaagent.jar
-         - ./deployment/app-config:/app-config
-      networks:
-         - yas-network
-   # webhook:
-   #   build: ./webhook
-   #   image: ghcr.io/nashtech-garage/yas-webhook:latest
-   #   environment:
-   #     - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/webhook
-   #     - SERVER_SERVLET_CONTEXT_PATH=/webhook
-   #     - YAS_PUBLIC_URL=${YAS_PUBLIC_API_URL}/webhook
-   #     - YAS_SERVICES_LOCATION
-   #     - SERVER_PORT
-   #     - LOGGING_CONFIG
-   #     - JAVA_TOOL_OPTIONS
-   #     - OTEL_EXPORTER_OTLP_ENDPOINT
-   #     - OTEL_EXPORTER_OTLP_PROTOCOL
-   #     - OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE
-   #     - OTEL_RESOURCE_ATTRIBUTES
-   #     - OTEL_SERVICE_NAME=webhook-service
-   #     - OTEL_LOGS_EXPORTER
-   #     - OTEL_TRACES_EXPORTER
-   #     - OTEL_METRICS_EXPORTER
-   #     - OTEL_INSTRUMENTATION_LOGBACK-MDC_ADD-BAGGAGE
-   #     - OTEL_JAVAAGENT_LOGGING
-   #     - OTEL_JAVAAGENT_ENABLED
-   #     - OTEL_JAVAAGENT_DEBUG
-   #   volumes:
-   #     - ./docker/libs/opentelemetry-javaagent.jar:/opentelemetry-javaagent.jar
-   #     - ./deployment/app-config:/app-config
-   #   networks:
-   #     - yas-network
-   # recommendation:
-   #   build: ./recommendation
-   #   image: ghcr.io/nashtech-garage/yas-recommendation:latest
-   #   ports:
-   #     - '9791:9791'
-   #   environment:
-   #     - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/recommendation
-   #     - SERVER_SERVLET_CONTEXT_PATH=/recommendation
-   #     - YAS_PUBLIC_URL=${YAS_PUBLIC_API_URL}/recommendation
-   #     - YAS_SERVICES_PRODUCT
-   #     - SERVER_PORT
-   #     - LOGGING_CONFIG
-   #     - JAVA_TOOL_OPTIONS
-   #     - OTEL_EXPORTER_OTLP_ENDPOINT
-   #     - OTEL_EXPORTER_OTLP_PROTOCOL
-   #     - OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE
-   #     - OTEL_RESOURCE_ATTRIBUTES
-   #     - OTEL_SERVICE_NAME=recommendation-service
-   #     - OTEL_LOGS_EXPORTER
-   #     - OTEL_TRACES_EXPORTER
-   #     - OTEL_METRICS_EXPORTER
-   #     - OTEL_INSTRUMENTATION_LOGBACK-MDC_ADD-BAGGAGE
-   #     - OTEL_JAVAAGENT_LOGGING
-   #     - OTEL_JAVAAGENT_ENABLED
-   #     - OTEL_JAVAAGENT_DEBUG
-   #     # OpenAI Config
-   #     - SPRING_AI_AZURE_OPENAI_API_KEY
-   #     - SPRING_AI_AZURE_OPENAI_ENDPOINT
-   #     - SPRING_AI_AZURE_OPENAI_EMBEDDING_OPTIONS_MODEL
-   #   volumes:
-   #     - ./docker/libs/opentelemetry-javaagent.jar:/opentelemetry-javaagent.jar
-   #     - ./deployment/app-config:/app-config
-   #   networks:
-   #     - yas-network
-   swagger-ui:
-      image: swaggerapi/swagger-ui:v5.27.1
-      environment:
-         - BASE_URL=/swagger-ui
-         - URLS
-         - OAUTH_CLIENT_ID=swagger-ui
-         - OAUTH_USE_PKCE=true
-      networks:
-         - yas-network
-   postgres:
-      image: quay.io/debezium/postgres:17-alpine
-      build: ./docker/postgres
-      hostname: ${POSTGRES_HOST}
-      ports:
-         - "${POSTGRES_PORT}:${POSTGRES_PORT}"
-      volumes:
-         - ./docker/postgres/postgresql.conf.sample:/usr/share/postgresql/postgresql.conf.sample
-         - ./postgres_init.sql:/docker-entrypoint-initdb.d/postgres_init.sql
-         - postgres:/var/lib/postgresql/data
-      command: postgres -c 'max_connections=500'
-      environment:
-         - POSTGRES_USER
-         - POSTGRES_PASSWORD
-      networks:
-         - yas-network
-      healthcheck:
-         test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d postgres" ]
-         interval: 5s
-         timeout: 3s
-         retries: 20
-   pgadmin:
-      image: dpage/pgadmin4:2025-07-23-1
-      volumes:
-         - pgadmin:/var/lib/pgadmin
-      environment:
-         PGADMIN_DEFAULT_EMAIL: admin@yas.com
-         PGADMIN_DEFAULT_PASSWORD: admin
-      networks:
-         - yas-network
+
    zookeeper:
       image: quay.io/debezium/zookeeper:3.2.0.Final
       restart: always
@@ -620,18 +561,19 @@ services:
       networks:
          - yas-network
    kafka:
-      image: confluentinc/cp-kafka:7.9.2
+      image: confluentinc/cp-kafka:7.9.4
       hostname: ${KAFKA_SERVICE_HOST}
       ports:
-         - ${KAFKA_SERVICE_PORT}:${KAFKA_SERVICE_PORT}
+         - "${KAFKA_SERVICE_PORT}:${KAFKA_SERVICE_PORT}"
          - "29092:29092"
       environment:
-         - KAFKA_BROKER_ID
-         - KAFKA_ZOOKEEPER_CONNECT
-         - KAFKA_ADVERTISED_LISTENERS
-         - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
-         - KAFKA_INTER_BROKER_LISTENER_NAME
-         - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
+         - KAFKA_BROKER_ID=${KAFKA_BROKER_ID}
+         - KAFKA_ZOOKEEPER_CONNECT=${KAFKA_ZOOKEEPER_CONNECT}
+         - KAFKA_LISTENERS=${KAFKA_LISTENERS}
+         - KAFKA_ADVERTISED_LISTENERS=${KAFKA_ADVERTISED_LISTENERS}
+         - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=${KAFKA_LISTENER_SECURITY_PROTOCOL_MAP}
+         - KAFKA_INTER_BROKER_LISTENER_NAME=${KAFKA_INTER_BROKER_LISTENER_NAME}
+         - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=${KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR}
       depends_on:
          - zookeeper
       healthcheck:
@@ -642,7 +584,7 @@ services:
       networks:
          - yas-network
    kafka-connect:
-      image: quay.io/debezium/connect:3.2.0.Final
+      image: quay.io/debezium/connect:3.3.1.Final
       restart: always
       ports:
          - "8083:8083"
@@ -670,7 +612,7 @@ services:
       networks:
          - yas-network
    redis:
-      image: redis:8.2.0-alpine
+      image: redis:8.2.3-alpine
       restart: always
       ports:
          - "6379:6379"
@@ -681,6 +623,135 @@ services:
          - redis:/data
       networks:
          - yas-network
+   swagger-ui:
+      image: swaggerapi/swagger-ui:v5.30.2
+      environment:
+         - BASE_URL=/swagger-ui
+         - URLS
+         - OAUTH_CLIENT_ID=swagger-ui
+         - OAUTH_USE_PKCE=true
+      networks:
+         - yas-network
+   webhook:
+      #      build: ./webhook
+      #      image: ghcr.io/nashtech-garage/yas-webhook:latest
+      build:
+         context: ./
+         dockerfile: webhook/Dockerfile
+      environment:
+         - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/webhook
+         - SERVER_SERVLET_CONTEXT_PATH=/webhook
+         - YAS_PUBLIC_URL=${YAS_PUBLIC_API_URL}/webhook
+         - YAS_SERVICES_LOCATION
+         - SERVER_PORT
+         - LOGGING_CONFIG
+         - JAVA_TOOL_OPTIONS
+         - OTEL_EXPORTER_OTLP_ENDPOINT
+         - OTEL_EXPORTER_OTLP_PROTOCOL
+         - OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE
+         - OTEL_RESOURCE_ATTRIBUTES
+         - OTEL_SERVICE_NAME=webhook-service
+         - OTEL_LOGS_EXPORTER
+         - OTEL_TRACES_EXPORTER
+         - OTEL_METRICS_EXPORTER
+         - OTEL_INSTRUMENTATION_LOGBACK-MDC_ADD-BAGGAGE
+         - OTEL_JAVAAGENT_LOGGING
+         - OTEL_JAVAAGENT_ENABLED
+         - OTEL_JAVAAGENT_DEBUG
+      volumes:
+         - ./docker/libs/opentelemetry-javaagent.jar:/opentelemetry-javaagent.jar
+         - ./deployment/app-config:/app-config
+      networks:
+         - yas-network
+
+#   pgadmin:
+#      image: dpage/pgadmin4:9.10.0
+#      volumes:
+#         - pgadmin:/var/lib/pgadmin
+#      environment:
+#         PGADMIN_DEFAULT_EMAIL: admin@yas.com
+#         PGADMIN_DEFAULT_PASSWORD: admin
+#      networks:
+#         - yas-network
+
+#   recommendation:
+#      #      build: ./recommendation
+#      #      image: ghcr.io/nashtech-garage/yas-recommendation:latest
+#      build:
+#         context: ./
+#         dockerfile: recommendation/Dockerfile
+#      ports:
+#         - '9791:9791'
+#      environment:
+#         - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/recommendation
+#         - SERVER_SERVLET_CONTEXT_PATH=/recommendation
+#         - YAS_PUBLIC_URL=${YAS_PUBLIC_API_URL}/recommendation
+#         - YAS_SERVICES_PRODUCT
+#         - SERVER_PORT
+#         - LOGGING_CONFIG
+#         - JAVA_TOOL_OPTIONS
+#         - OTEL_EXPORTER_OTLP_ENDPOINT
+#         - OTEL_EXPORTER_OTLP_PROTOCOL
+#         - OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE
+#         - OTEL_RESOURCE_ATTRIBUTES
+#         - OTEL_SERVICE_NAME=recommendation-service
+#         - OTEL_LOGS_EXPORTER
+#         - OTEL_TRACES_EXPORTER
+#         - OTEL_METRICS_EXPORTER
+#         - OTEL_INSTRUMENTATION_LOGBACK-MDC_ADD-BAGGAGE
+#         - OTEL_JAVAAGENT_LOGGING
+#         - OTEL_JAVAAGENT_ENABLED
+#         - OTEL_JAVAAGENT_DEBUG
+#         # OpenAI Config
+#         - SPRING_AI_AZURE_OPENAI_API_KEY
+#         - SPRING_AI_AZURE_OPENAI_ENDPOINT
+#         - SPRING_AI_AZURE_OPENAI_EMBEDDING_OPTIONS_MODEL
+#      volumes:
+#         - ./docker/libs/opentelemetry-javaagent.jar:/opentelemetry-javaagent.jar
+#         - ./deployment/app-config:/app-config
+#      networks:
+#         - yas-network
+
+#   payment:
+#      build:
+#         context: ./
+#         dockerfile: payment/Dockerfile
+#      environment:
+#         - SPRING_PROFILES_ACTIVE=prod
+#         - SPRING_DATASOURCE_URL=jdbc:postgresql://${POSTGRES_HOST:-postgres}:${POSTGRES_PORT:-5432}/payment
+#         - POSTGRES_HOST=${POSTGRES_HOST:-postgres}
+#         - POSTGRES_PORT=${POSTGRES_PORT:-5432}
+#         - POSTGRES_USER=${POSTGRES_USER:-admin}
+#         - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-admin}
+#         - SERVER_SERVLET_CONTEXT_PATH=/payment
+#         - YAS_PUBLIC_URL=${YAS_PUBLIC_API_URL}/payment
+#         - YAS_SERVICES_ORDER
+#         - YAS_SERVICES_MEDIA
+#         - SERVER_PORT
+#         - LOGGING_CONFIG
+#         - JAVA_TOOL_OPTIONS
+#         - OTEL_EXPORTER_OTLP_ENDPOINT
+#         - OTEL_EXPORTER_OTLP_PROTOCOL
+#         - OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE
+#         - OTEL_RESOURCE_ATTRIBUTES
+#         - OTEL_SERVICE_NAME=payment-service
+#         - OTEL_LOGS_EXPORTER
+#         - OTEL_TRACES_EXPORTER
+#         - OTEL_METRICS_EXPORTER
+#         - OTEL_INSTRUMENTATION_LOGBACK-MDC_ADD-BAGGAGE
+#         - OTEL_JAVAAGENT_LOGGING
+#         - OTEL_JAVAAGENT_ENABLED
+#         - OTEL_JAVAAGENT_DEBUG
+#         - YAS_CURRENCY_UNIT
+#         - YAS_PRICE_INCLUDES_TAX
+#      depends_on:
+#         postgres:
+#            condition: service_healthy
+#      volumes:
+#         - ./docker/libs/opentelemetry-javaagent.jar:/opentelemetry-javaagent.jar
+#         - ./deployment/app-config:/app-config
+#      networks:
+#         - yas-network
 
 networks:
    yas-network:

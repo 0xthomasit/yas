@@ -15,7 +15,7 @@ import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -43,13 +43,13 @@ class ProductAttributeValueControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private ProductAttributeValueRepository productAttributeValueRepository;
 
-    @MockBean
+    @MockitoBean
     private ProductAttributeRepository productAttributeRepository;
 
-    @MockBean
+    @MockitoBean
     private ProductRepository productRepository;
 
     @Test

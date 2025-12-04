@@ -21,8 +21,10 @@ class EventServiceTest {
 
     @Mock
     EventRepository eventRepository;
+
     @Mock
     EventMapper eventMapper;
+
     @InjectMocks
     EventService eventService;
 

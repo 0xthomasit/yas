@@ -1,10 +1,11 @@
+import React from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 
 type DialogProps = {
   isOpen?: boolean;
   title?: string;
-  children: JSX.Element;
+  children: React.ReactNode;
   isShowOk?: boolean;
   isShowCancel?: boolean;
   okText?: string;

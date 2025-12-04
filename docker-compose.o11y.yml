@@ -16,7 +16,7 @@ services:
    collector:
 #      entrypoint: [ "./wait-for-it.sh", "tempo:4317", "--timeout=300", "--", "otelcol-contrib", "--config=/etc/otelcol-config.yml" ]
 #      image: otel/opentelemetry-collector-contrib:0.97.0
-      image: otel/opentelemetry-collector-contrib:0.131.1
+      image: otel/opentelemetry-collector-contrib:0.140.1
       container_name: collector
       hostname: ${OTEL_COLLECTOR_HOST}
       depends_on:
@@ -39,7 +39,7 @@ services:
       networks:
          - yas-network
    prometheus:
-      image: prom/prometheus:v3.5.0
+      image: prom/prometheus:v3.7.3
       hostname: ${PROMETHEUS_SERVICE_HOST}
       container_name: prometheus
       command:
@@ -64,7 +64,7 @@ services:
       networks:
          - yas-network
    grafana:
-      image: grafana/grafana:12.2.0-16791878397
+      image: grafana/grafana:12.4.0-19363970803
       container_name: grafana
       extra_hosts: [ 'host.docker.internal:host-gateway' ]
       volumes:
@@ -84,7 +84,7 @@ services:
       networks:
          - yas-network
    loki:
-      image: grafana/loki:3.5.3
+      image: grafana/loki:3.6.1
       container_name: loki
       ports:
          - "3100:3100"
@@ -93,7 +93,7 @@ services:
       networks:
          - yas-network
    tempo:
-      image: grafana/tempo:2.8.2
+      image: grafana/tempo:2.9.0
       container_name: tempo
       command: [ "-config.file=/etc/tempo.yaml" ]
       ports:

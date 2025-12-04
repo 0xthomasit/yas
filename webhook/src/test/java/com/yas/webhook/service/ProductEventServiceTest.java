@@ -28,10 +28,13 @@ class ProductEventServiceTest {
 
     @Mock
     EventRepository eventRepository;
+
     @Mock
     WebhookEventNotificationRepository webhookEventNotificationRepository;
+
     @Mock
     WebhookService webhookService;
+
     @InjectMocks
     ProductEventService productEventService;
 

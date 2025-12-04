@@ -45,11 +45,12 @@ class OrderServiceTest {
     }
 
     @Test
+    @SuppressWarnings({"rawtypes", "unchecked"})
     void testCheckOrderExistsByProductAndUserWithStatus_whenNormalCase_returnOrderExistsByProductAndUserGetVm() {
 
         when(serviceUrlConfig.order()).thenReturn(ORDER_URL);
         URI url = UriComponentsBuilder
-                .fromHttpUrl(serviceUrlConfig.order())
+                .fromUriString(serviceUrlConfig.order())
                 .path("/storefront/orders/completed")
                 .queryParam("productId", "1")
                 .buildAndExpand()

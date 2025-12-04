@@ -6,13 +6,15 @@
     <parent>
         <groupId>com.yas</groupId>
         <artifactId>automation-ui</artifactId>
-        <version>${revision}</version>
+        <version>1.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>storefront</artifactId>
 
     <properties>
+        <maven.compiler.release>21</maven.compiler.release>
+
         <sonar.organization>nashtech-garage</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <sonar.projectKey>nashtech-garage_yas-automation-ui-storefront</sonar.projectKey>

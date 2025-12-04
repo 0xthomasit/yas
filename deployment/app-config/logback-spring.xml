@@ -15,8 +15,7 @@
 	<appender name="JSON_APPENDER"
 		class="ch.qos.logback.core.ConsoleAppender">
 		<Target>${user-system}.out</Target>
-		<encoder
-			class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+		<encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
 			<providers>
 				<mdc />
 				<pattern>

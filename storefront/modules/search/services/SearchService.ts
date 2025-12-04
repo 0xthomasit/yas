@@ -5,7 +5,7 @@ import apiClientService from '@/common/services/ApiClientService';
 
 export async function getSuggestions(keyword: string): Promise<ProductSearchSuggestions> {
   const response = await apiClientService.get(
-    `/api/search/storefront/search_suggest?keyword=${keyword}`
+    `/api/search/storefront/search_suggest?keyword=${encodeURIComponent(keyword)}`
   );
   if (response.status >= 200 && response.status < 300) {
     return await response.json();
@@ -15,15 +15,15 @@ export async function getSuggestions(keyword: string): Promise<ProductSearchSugg
 }
 
 export async function searchProducts(params: SearchParams): Promise<SearchProductResponse> {
-  let url = `api/search/storefront/catalog-search?keyword=${params.keyword}`;
+  let url = `/api/search/storefront/catalog-search?keyword=${encodeURIComponent(params.keyword)}`;
   if (params.category) {
-    url += `&category=${params.category}`;
+    url += `&category=${encodeURIComponent(params.category)}`;
   }
   if (params.brand) {
-    url += `&brand=${params.brand}`;
+    url += `&brand=${encodeURIComponent(params.brand)}`;
   }
   if (params.attribute) {
-    url += `&attribute=${params.attribute}`;
+    url += `&attribute=${encodeURIComponent(params.attribute)}`;
   }
   if (params.minPrice) {
     url += `&minPrice=${params.minPrice}`;
@@ -38,7 +38,7 @@ export async function searchProducts(params: SearchParams): Promise<SearchProduc
     url += `&page=${params.page}`;
   }
   if (params.pageSize) {
-    url += `&pageSize=${params.pageSize}`;
+    url += `&size=${params.pageSize}`;
   }
   const response = await apiClientService.get(url);
   if (response.status >= 200 && response.status < 300) {

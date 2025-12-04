@@ -1,7 +1,10 @@
 services:
    search:
-      build: ./search
-      image: ghcr.io/nashtech-garage/yas-search:latest
+      # build: ./search
+      # image: ghcr.io/nashtech-garage/yas-search:latest
+      build:
+         context: ./
+         dockerfile: search/Dockerfile
       environment:
          - ELASTICSEARCH_URL=${ELASTICSEARCH_URL:-elasticsearch:9200}
          - SERVER_SERVLET_CONTEXT_PATH=/search
@@ -31,11 +34,11 @@ services:
          # If you start Kafka via the main compose file and rely on Kafka topics:
          #  kafka:
          #     condition: service_started
-      entrypoint: [ "./wait-for-it.sh", "elasticsearch:9200", "--timeout=300", "--", "java", "-jar", "/app.jar" ]
+      entrypoint: [ "./wait-for-it.sh", "elasticsearch:9200", "--timeout=300", "--", "java", "-jar", "search.jar" ]
       networks:
          - yas-network
    elasticsearch:
-      image: elasticsearch:9.1.0
+      image: elasticsearch:9.2.1
       volumes:
          - esdata:/usr/share/elasticsearch/data
       environment:

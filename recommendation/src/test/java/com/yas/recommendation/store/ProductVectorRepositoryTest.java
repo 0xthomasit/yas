@@ -31,9 +31,9 @@ import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
@@ -45,10 +45,10 @@ public class ProductVectorRepositoryTest extends BaseVectorRepositoryTest<Produc
     @Mock
     private OpenAIClient openAIClient;
 
-    @MockBean
+    @MockitoBean
     private VectorStore vectorStore;
 
-    @MockBean
+    @MockitoBean
     private ProductService productService;
 
     @Autowired
@@ -109,8 +109,8 @@ public class ProductVectorRepositoryTest extends BaseVectorRepositoryTest<Produc
         assertSearchRequest(searchRequestCaptor.getValue(), searchedProduct);
 
         assertEquals(1, productDocuments.size());
-        assertEquals(similarDocument.getContent(), productDocuments.getFirst().getContent());
-        assertEquals(similarDocument.getContent(), productDocuments.getFirst().getContent());
+        assertEquals(similarDocument.getText(), productDocuments.getFirst().getContent());
+        assertEquals(similarDocument.getText(), productDocuments.getFirst().getContent());
         assertEquals(similarDocument.getMetadata().keySet(), productDocuments.getFirst().getMetadata().keySet());
         assertEquals(similarDocument.getMetadata().entrySet(), productDocuments.getFirst().getMetadata().entrySet());
     }

@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
-
 @Service
 @RequiredArgsConstructor
 public class PromotionService extends AbstractCircuitBreakFallbackHandler {
@@ -28,7 +27,7 @@ public class PromotionService extends AbstractCircuitBreakFallbackHandler {
         final String jwt = ((Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
                 .getTokenValue();
         final URI url = UriComponentsBuilder
-                .fromHttpUrl(serviceUrlConfig.promotion())
+                .fromUriString(serviceUrlConfig.promotion())
                 .path("/backoffice/promotions/updateUsage")
                 .buildAndExpand()
                 .toUri();

@@ -33,7 +33,7 @@ public class ProductService extends AbstractCircuitBreakFallbackHandler {
     public List<ProductVm> getProductByIds(List<Long> ids) {
         String jwt = AuthenticationUtils.extractJwt();
         final URI url = UriComponentsBuilder
-                .fromHttpUrl(serviceUrlConfig.product())
+                .fromUriString(serviceUrlConfig.product())
                 .path("/backoffice/products/by-ids")
                 .queryParams(createIdParams(ids))
                 .build()
@@ -53,7 +53,7 @@ public class ProductService extends AbstractCircuitBreakFallbackHandler {
     public List<CategoryGetVm> getCategoryByIds(List<Long> ids) {
         String jwt = AuthenticationUtils.extractJwt();
         final URI url = UriComponentsBuilder
-                .fromHttpUrl(serviceUrlConfig.product())
+                .fromUriString(serviceUrlConfig.product())
                 .path("/backoffice/categories/by-ids")
                 .queryParams(createIdParams(ids))
                 .build()
@@ -72,7 +72,7 @@ public class ProductService extends AbstractCircuitBreakFallbackHandler {
     public List<BrandVm> getBrandByIds(List<Long> ids) {
         String jwt = AuthenticationUtils.extractJwt();
         final URI url = UriComponentsBuilder
-                .fromHttpUrl(serviceUrlConfig.product())
+                .fromUriString(serviceUrlConfig.product())
                 .path("/backoffice/brands/by-ids")
                 .queryParams(createIdParams(ids))
                 .build()
@@ -91,7 +91,7 @@ public class ProductService extends AbstractCircuitBreakFallbackHandler {
     public List<ProductVm> getProductByCategoryIds(List<Long> categoryIds) {
         String jwt = AuthenticationUtils.extractJwt();
         final URI url = UriComponentsBuilder
-                .fromHttpUrl(serviceUrlConfig.product())
+                .fromUriString(serviceUrlConfig.product())
                 .path("/backoffice/products/by-categories")
                 .queryParams(createIdParams(categoryIds))
                 .build()
@@ -110,7 +110,7 @@ public class ProductService extends AbstractCircuitBreakFallbackHandler {
     public List<ProductVm> getProductByBrandIds(List<Long> brandIds) {
         String jwt = AuthenticationUtils.extractJwt();
         final URI url = UriComponentsBuilder
-                .fromHttpUrl(serviceUrlConfig.product())
+                .fromUriString(serviceUrlConfig.product())
                 .path("/backoffice/products/by-brands")
                 .queryParams(createIdParams(brandIds))
                 .build()

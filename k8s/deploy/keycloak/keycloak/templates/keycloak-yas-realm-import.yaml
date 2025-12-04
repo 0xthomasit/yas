@@ -818,7 +818,7 @@ spec:
         enabled: true
         alwaysDisplayInConsole: false
         clientAuthenticatorType: client-secret
-        secret: ZrU9I0q2uXBglBnmvyJdkl1lf0ncr8tn
+        secret: W6FudoS8wOW117o2YR1QcLIZdGxQXEiO
         redirectUris:
           - {{ .Values.storefrontRedirectUrl }}/*
           - http://localhost:8087/*

@@ -8,51 +8,65 @@ import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
+
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 
 public class OrderSpecification {
 
-    private OrderSpecification() {}
+    private OrderSpecification() {
+    }
 
     public static Specification<Order> existsByCreatedByAndInProductIdAndOrderStatusCompleted(
-        String createdBy, List<Long> productIds) {
+            String createdBy, List<Long> productIds) {
 
-        return Specification.where(hasCreatedBy(createdBy))
-            .and(hasOrderStatus(OrderStatus.COMPLETED))
-            .and(hasProductInOrderItems(productIds));
+//        return Specification.where(hasCreatedBy(createdBy))
+//            .and(hasOrderStatus(OrderStatus.COMPLETED))
+//            .and(hasProductInOrderItems(productIds));
+
+        // Method 1: Start directly with the first specification
+//        return hasCreatedBy(createdBy)
+//                .and(hasOrderStatus(OrderStatus.COMPLETED))
+//                .and(hasProductInOrderItems(productIds));
+
+        // Method 2: Use the unrestricted() static method if hasCreatedBy() can sometimes be null/empty
+        return Specification.<Order>unrestricted()
+                .and(hasCreatedBy(createdBy))
+                .and(hasOrderStatus(OrderStatus.COMPLETED))
+                .and(hasProductInOrderItems(productIds));
     }
 
     public static Specification<Order> findMyOrders(String userId, String productName, OrderStatus orderStatus) {
         return (root, query, criteriaBuilder) -> {
 
             Predicate hasCreatedByPredicate
-                = hasCreatedBy(userId).toPredicate(root, query, criteriaBuilder);
+                    = hasCreatedBy(userId).toPredicate(root, query, criteriaBuilder);
             Predicate hasOrderStatusPredicate
-                = hasOrderStatus(orderStatus).toPredicate(root, query, criteriaBuilder);
+                    = hasOrderStatus(orderStatus).toPredicate(root, query, criteriaBuilder);
             Predicate hasProductNamePredicate
-                = hasProductNameInOrderItems(productName).toPredicate(root, query, criteriaBuilder);
+                    = hasProductNameInOrderItems(productName).toPredicate(root, query, criteriaBuilder);
 
             return criteriaBuilder.and(
-                hasCreatedByPredicate,
-                hasOrderStatusPredicate,
-                hasProductNamePredicate
+                    hasCreatedByPredicate,
+                    hasOrderStatusPredicate,
+                    hasProductNamePredicate
             );
         };
     }
 
     public static Specification<Order> findOrderByWithMulCriteria(
-        List<OrderStatus> orderStatus,
-        String billingPhoneNumber,
-        String countryName,
-        String email,
-        String productName,
-        ZonedDateTime createdFrom,
-        ZonedDateTime createdTo) {
+            List<OrderStatus> orderStatus,
+            String billingPhoneNumber,
+            String countryName,
+            String email,
+            String productName,
+            ZonedDateTime createdFrom,
+            ZonedDateTime createdTo) {
 
         return (root, query, criteriaBuilder) -> {
 
@@ -62,25 +76,25 @@ public class OrderSpecification {
             }
 
             Predicate withEmail
-                = withEmail(email).toPredicate(root, query, criteriaBuilder);
+                    = withEmail(email).toPredicate(root, query, criteriaBuilder);
             Predicate withOrderStatus
-                = withOrderStatus(orderStatus).toPredicate(root, query, criteriaBuilder);
+                    = withOrderStatus(orderStatus).toPredicate(root, query, criteriaBuilder);
             Predicate withProductName
-                = withProductName(productName).toPredicate(root, query, criteriaBuilder);
+                    = withProductName(productName).toPredicate(root, query, criteriaBuilder);
             Predicate withBillingPhoneNumber
-                = withBillingPhoneNumber(billingPhoneNumber).toPredicate(root, query, criteriaBuilder);
+                    = withBillingPhoneNumber(billingPhoneNumber).toPredicate(root, query, criteriaBuilder);
             Predicate withCountryName
-                = withCountryName(countryName).toPredicate(root, query, criteriaBuilder);
+                    = withCountryName(countryName).toPredicate(root, query, criteriaBuilder);
             Predicate withDateRange
-                = withDateRange(createdFrom, createdTo).toPredicate(root, query, criteriaBuilder);
+                    = withDateRange(createdFrom, createdTo).toPredicate(root, query, criteriaBuilder);
 
             return criteriaBuilder.and(
-                withEmail,
-                withOrderStatus,
-                withProductName,
-                withBillingPhoneNumber,
-                withCountryName,
-                withDateRange
+                    withEmail,
+                    withOrderStatus,
+                    withProductName,
+                    withBillingPhoneNumber,
+                    withCountryName,
+                    withDateRange
             );
         };
     }
@@ -95,16 +109,16 @@ public class OrderSpecification {
             Subquery<OrderItem> subquery = query.subquery(OrderItem.class);
             Root<OrderItem> orderItemRoot = subquery.from(OrderItem.class);
             subquery.select(orderItemRoot)
-                .where(
-                    criteriaBuilder.and(
-                        criteriaBuilder.equal(
-                            orderItemRoot.get(Constants.Column.ORDER_ORDER_ID_COLUMN),
-                            root.get(Constants.Column.ID_COLUMN)
-                        ),
-                        orderItemRoot.get(Constants.Column.ORDER_ITEM_PRODUCT_ID_COLUMN)
-                            .in(Optional.ofNullable(productIds).orElse(List.of()))
-                    )
-                );
+                    .where(
+                            criteriaBuilder.and(
+                                    criteriaBuilder.equal(
+                                            orderItemRoot.get(Constants.Column.ORDER_ORDER_ID_COLUMN),
+                                            root.get(Constants.Column.ID_COLUMN)
+                                    ),
+                                    orderItemRoot.get(Constants.Column.ORDER_ITEM_PRODUCT_ID_COLUMN)
+                                            .in(Optional.ofNullable(productIds).orElse(List.of()))
+                            )
+                    );
 
             return criteriaBuilder.exists(subquery);
         };
@@ -112,15 +126,15 @@ public class OrderSpecification {
 
     public static Specification<Order> hasCreatedBy(String createdBy) {
         return (root, query, criteriaBuilder) ->
-            criteriaBuilder.equal(root.get(Constants.Column.CREATE_BY_COLUMN), createdBy);
+                criteriaBuilder.equal(root.get(Constants.Column.CREATE_BY_COLUMN), createdBy);
     }
 
     public static Specification<Order> hasOrderStatus(OrderStatus orderStatus) {
         return (root, query, criteriaBuilder) -> {
             if (orderStatus != null) {
                 return criteriaBuilder.equal(
-                    root.get(Constants.Column.ORDER_ORDER_STATUS_COLUMN),
-                    orderStatus);
+                        root.get(Constants.Column.ORDER_ORDER_STATUS_COLUMN),
+                        orderStatus);
             }
             return criteriaBuilder.conjunction();
         };
@@ -139,13 +153,13 @@ public class OrderSpecification {
             Predicate productNamePredicate = criteriaBuilder.conjunction();
             if (StringUtils.isNotEmpty(productName)) {
                 productNamePredicate = criteriaBuilder.like(
-                    criteriaBuilder.lower(orderItemRoot.get(Constants.Column.ORDER_ITEM_PRODUCT_NAME_COLUMN)),
-                    "%" + productName.toLowerCase() + "%"
+                        criteriaBuilder.lower(orderItemRoot.get(Constants.Column.ORDER_ITEM_PRODUCT_NAME_COLUMN)),
+                        "%" + productName.toLowerCase() + "%"
                 );
             }
 
             subquery.select(orderItemRoot.get(Constants.Column.ORDER_ORDER_ID_COLUMN))
-                .where(productNamePredicate);
+                    .where(productNamePredicate);
 
             return criteriaBuilder.in(root.get(Constants.Column.ID_COLUMN)).value(subquery);
         };
@@ -155,8 +169,8 @@ public class OrderSpecification {
         return (root, query, criteriaBuilder) -> {
             if (StringUtils.isNotEmpty(email)) {
                 return criteriaBuilder.like(
-                    criteriaBuilder.lower(root.get(Constants.Column.ORDER_EMAIL_COLUMN)),
-                    "%" + email.toLowerCase() + "%"
+                        criteriaBuilder.lower(root.get(Constants.Column.ORDER_EMAIL_COLUMN)),
+                        "%" + email.toLowerCase() + "%"
                 );
             }
             return criteriaBuilder.conjunction();
@@ -183,15 +197,15 @@ public class OrderSpecification {
             Root<OrderItem> orderItemRoot = subquery.from(OrderItem.class);
             subquery.select(orderItemRoot.get(Constants.Column.ORDER_ORDER_ID_COLUMN));
             subquery.where(
-                criteriaBuilder.and(
-                    criteriaBuilder.equal(
-                        orderItemRoot.get(Constants.Column.ORDER_ORDER_ID_COLUMN),
-                        root.get(Constants.Column.ID_COLUMN)),
-                    criteriaBuilder.like(
-                        criteriaBuilder.lower(orderItemRoot.get(Constants.Column.ORDER_ITEM_PRODUCT_NAME_COLUMN)),
-                        "%" + productName.toLowerCase() + "%"
+                    criteriaBuilder.and(
+                            criteriaBuilder.equal(
+                                    orderItemRoot.get(Constants.Column.ORDER_ORDER_ID_COLUMN),
+                                    root.get(Constants.Column.ID_COLUMN)),
+                            criteriaBuilder.like(
+                                    criteriaBuilder.lower(orderItemRoot.get(Constants.Column.ORDER_ITEM_PRODUCT_NAME_COLUMN)),
+                                    "%" + productName.toLowerCase() + "%"
+                            )
                     )
-                )
             );
             return criteriaBuilder.exists(subquery);
 
@@ -202,11 +216,11 @@ public class OrderSpecification {
         return (root, query, criteriaBuilder) -> {
             if (billingPhoneNumber != null && !billingPhoneNumber.isEmpty()) {
                 return criteriaBuilder.like(
-                    criteriaBuilder.lower(
-                        root.get(Constants.Column.ORDER_BILLING_ADDRESS_ID_COLUMN)
-                            .get(Constants.Column.ORDER_PHONE_COLUMN)
-                    ),
-                    "%" + billingPhoneNumber.toLowerCase() + "%"
+                        criteriaBuilder.lower(
+                                root.get(Constants.Column.ORDER_BILLING_ADDRESS_ID_COLUMN)
+                                        .get(Constants.Column.ORDER_PHONE_COLUMN)
+                        ),
+                        "%" + billingPhoneNumber.toLowerCase() + "%"
                 );
             }
             return criteriaBuilder.conjunction();
@@ -217,11 +231,11 @@ public class OrderSpecification {
         return (root, query, criteriaBuilder) -> {
             if (countryName != null && !countryName.isEmpty()) {
                 return criteriaBuilder.like(
-                    criteriaBuilder.lower(
-                        root.get(Constants.Column.ORDER_BILLING_ADDRESS_ID_COLUMN)
-                            .get(Constants.Column.ORDER_COUNTRY_NAME_COLUMN)
-                    ),
-                    "%" + countryName.toLowerCase() + "%"
+                        criteriaBuilder.lower(
+                                root.get(Constants.Column.ORDER_BILLING_ADDRESS_ID_COLUMN)
+                                        .get(Constants.Column.ORDER_COUNTRY_NAME_COLUMN)
+                        ),
+                        "%" + countryName.toLowerCase() + "%"
                 );
             }
             return criteriaBuilder.conjunction();
@@ -232,9 +246,9 @@ public class OrderSpecification {
         return (root, query, criteriaBuilder) -> {
             if (createdFrom != null && createdTo != null) {
                 return criteriaBuilder.between(
-                    root.get(Constants.Column.CREATE_ON_COLUMN),
-                    createdFrom,
-                    createdTo
+                        root.get(Constants.Column.CREATE_ON_COLUMN),
+                        createdFrom,
+                        createdTo
                 );
             }
             return criteriaBuilder.conjunction();

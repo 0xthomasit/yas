@@ -56,7 +56,7 @@ class ProductServiceTest {
         Long productId = 1L;
 
         final URI url = UriComponentsBuilder
-                .fromHttpUrl(PRODUCT_URL)
+                .fromUriString(PRODUCT_URL)
                 .path("/backoffice/products/" + productId)
                 .build()
                 .toUri();
@@ -94,7 +94,7 @@ class ProductServiceTest {
         params.add("productIds", productIds.stream().map(String::valueOf).collect(Collectors.joining(",")));
 
         final URI url = UriComponentsBuilder
-                .fromHttpUrl(PRODUCT_URL)
+                .fromUriString(PRODUCT_URL)
                 .path("/backoffice/products/for-warehouse")
                 .queryParams(params)
                 .build()
@@ -126,7 +126,7 @@ class ProductServiceTest {
         List<ProductQuantityPostVm> productQuantityPostVms = List.of(new ProductQuantityPostVm(1L, 100L));
 
         final URI url = UriComponentsBuilder
-                .fromHttpUrl(serviceUrlConfig.product())
+                .fromUriString(serviceUrlConfig.product())
                 .path("/backoffice/products/update-quantity")
                 .buildAndExpand()
                 .toUri();

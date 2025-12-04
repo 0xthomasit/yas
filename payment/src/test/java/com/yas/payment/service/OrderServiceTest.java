@@ -59,7 +59,7 @@ class OrderServiceTest {
                 .build();
 
         URI url = UriComponentsBuilder
-                .fromHttpUrl(serviceUrlConfig.order())
+                .fromUriString(serviceUrlConfig.order())
                 .path("/storefront/checkouts/status")
                 .buildAndExpand()
                 .toUri();
@@ -90,7 +90,7 @@ class OrderServiceTest {
                 .build();
 
         URI url = UriComponentsBuilder
-                .fromHttpUrl(serviceUrlConfig.order())
+                .fromUriString(serviceUrlConfig.order())
                 .path("/storefront/orders/status")
                 .buildAndExpand()
                 .toUri();

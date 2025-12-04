@@ -8,7 +8,7 @@ class RatingApplicationTest {
 
     @Test
     void contextLoads() {
-        // It is suppose to be empty
+        // It is supposed to be empty
     }
 
 }

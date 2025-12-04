@@ -54,7 +54,7 @@ class ProductServiceTest {
         List<Long> ids = List.of(1L);
 
         URI url = UriComponentsBuilder
-                .fromHttpUrl(serviceUrlConfig.product())
+                .fromUriString(serviceUrlConfig.product())
                 .path("/backoffice/products/by-ids")
                 .queryParams(createIdParams(ids))
                 .build()
@@ -83,7 +83,7 @@ class ProductServiceTest {
         List<Long> ids = List.of(2L);
 
         URI url = UriComponentsBuilder
-                .fromHttpUrl(serviceUrlConfig.product())
+                .fromUriString(serviceUrlConfig.product())
                 .path("/backoffice/categories/by-ids")
                 .queryParams(createIdParams(ids))
                 .build()
@@ -118,7 +118,7 @@ class ProductServiceTest {
         List<Long> ids = List.of(4L);
 
         URI url = UriComponentsBuilder
-                .fromHttpUrl(serviceUrlConfig.product())
+                .fromUriString(serviceUrlConfig.product())
                 .path("/backoffice/brands/by-ids")
                 .queryParams(createIdParams(ids))
                 .build()
@@ -153,7 +153,7 @@ class ProductServiceTest {
         List<Long> ids = List.of(1L);
 
         URI url = UriComponentsBuilder
-                .fromHttpUrl(serviceUrlConfig.product())
+                .fromUriString(serviceUrlConfig.product())
                 .path("/backoffice/products/by-categories")
                 .queryParams(createIdParams(ids))
                 .build()
@@ -181,7 +181,7 @@ class ProductServiceTest {
         List<Long> ids = List.of(1L);
 
         URI url = UriComponentsBuilder
-                .fromHttpUrl(serviceUrlConfig.product())
+                .fromUriString(serviceUrlConfig.product())
                 .path("/backoffice/products/by-brands")
                 .queryParams(createIdParams(ids))
                 .build()

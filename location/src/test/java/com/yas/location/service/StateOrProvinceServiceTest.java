@@ -26,8 +26,10 @@ public class StateOrProvinceServiceTest {
 
     @Autowired
     private CountryRepository countryRepository;
+
     @Autowired
     private StateOrProvinceRepository stateOrProvinceRepository;
+
     @Autowired
     private StateOrProvinceService stateOrProvinceService;
 

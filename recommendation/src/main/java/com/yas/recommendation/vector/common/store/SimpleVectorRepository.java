@@ -6,8 +6,10 @@ import com.yas.recommendation.vector.common.document.BaseDocument;
 import com.yas.recommendation.vector.common.document.DefaultIdGenerator;
 import com.yas.recommendation.vector.common.document.DocumentMetadata;
 import com.yas.recommendation.vector.common.formatter.DocumentFormatter;
+
 import java.util.List;
 import java.util.Map;
+
 import lombok.SneakyThrows;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.document.id.IdGenerator;
@@ -113,11 +115,12 @@ public abstract class SimpleVectorRepository<D extends BaseDocument, E> implemen
         final var entityContentMap = objectMapper.convertValue(entity, Map.class);
         final var content = documentFormatter.format(entityContentMap, documentMetadata.contentFormat(), objectMapper);
         return vectorStore.similaritySearch(
-                        SearchRequest
+                        SearchRequest.builder()
                                 .query(content)
-                                .withTopK(embeddingSearchConfiguration.topK())
-                                .withFilterExpression(this.excludeSameEntityExpression(id))
-                                .withSimilarityThreshold(embeddingSearchConfiguration.similarityThreshold())
+                                .topK(embeddingSearchConfiguration.topK())
+                                .filterExpression(this.excludeSameEntityExpression(id))
+                                .similarityThreshold(embeddingSearchConfiguration.similarityThreshold())
+                                .build()
                 )
                 .stream()
                 .map(this::toBaseDocument)
@@ -136,7 +139,7 @@ public abstract class SimpleVectorRepository<D extends BaseDocument, E> implemen
     @SneakyThrows
     protected D toBaseDocument(Document document) {
         D baseDocument = docType.getDeclaredConstructor().newInstance();
-        baseDocument.setContent(document.getContent());
+        baseDocument.setContent(document.getText());
         baseDocument.setMetadata(document.getMetadata());
         return baseDocument;
     }

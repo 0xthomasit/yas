@@ -26,7 +26,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -35,12 +35,16 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 class RatingServiceTest {
 
     private final String userId = "user1";
+
     @Autowired
     private RatingRepository ratingRepository;
-    @MockBean
+
+    @MockitoBean
     private CustomerService customerService;
-    @MockBean
+
+    @MockitoBean
     private OrderService orderService;
+
     @Autowired
     private RatingService ratingService;
 

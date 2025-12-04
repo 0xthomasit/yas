@@ -105,7 +105,6 @@ const WarehouseProducts: NextPage = () => {
                   setWarehouseIdSelected(Number(e.target.value));
                 }}
                 style={!warehouseIdSelected ? { color: '#838d8d' } : {}}
-                placeholder="Select Warehouse..."
               >
                 <option key="all" style={{ color: '#838d8d' }} value={undefined}>
                   Select Warehouse...

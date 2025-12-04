@@ -32,7 +32,7 @@ public class LocationService extends AbstractCircuitBreakFallbackHandler {
         final String jwt =
                 ((Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getTokenValue();
         final URI url = UriComponentsBuilder
-                .fromHttpUrl(serviceUrlConfig.location())
+                .fromUriString(serviceUrlConfig.location())
                 .path("/storefront/addresses")
                 .queryParam("ids", ids)
                 .buildAndExpand()
@@ -52,7 +52,7 @@ public class LocationService extends AbstractCircuitBreakFallbackHandler {
         final String jwt =
                 ((Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getTokenValue();
         final URI url = UriComponentsBuilder
-                .fromHttpUrl(serviceUrlConfig.location())
+                .fromUriString(serviceUrlConfig.location())
                 .path("/storefront/addresses/{id}")
                 .buildAndExpand(id)
                 .toUri();
@@ -70,7 +70,7 @@ public class LocationService extends AbstractCircuitBreakFallbackHandler {
         final String jwt =
                 ((Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getTokenValue();
         final URI url = UriComponentsBuilder
-                .fromHttpUrl(serviceUrlConfig.location())
+                .fromUriString(serviceUrlConfig.location())
                 .path("/storefront/addresses")
                 .buildAndExpand()
                 .toUri();

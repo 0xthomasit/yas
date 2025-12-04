@@ -21,7 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
@@ -48,7 +48,7 @@ import com.yas.promotion.viewmodel.PromotionPutVm;
 @AutoConfigureMockMvc(addFilters = false)
 class PromotionControllerTest {
 
-    @MockBean
+    @MockitoBean
     private PromotionService promotionService;
 
     @Autowired

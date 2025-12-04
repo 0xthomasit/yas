@@ -29,6 +29,7 @@ import com.yas.order.viewmodel.order.PaymentOrderStatusVm;
 import com.yas.order.viewmodel.orderaddress.OrderAddressPostVm;
 import com.yas.order.viewmodel.product.ProductVariationVm;
 import com.yas.order.viewmodel.promotion.PromotionUsageVm;
+
 import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -39,6 +40,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -174,13 +176,13 @@ public class OrderService {
         String billingPhoneNumber = billingPair.getSecond();
 
         Specification<Order> spec = OrderSpecification.findOrderByWithMulCriteria(
-            orderStatus.isEmpty() ? allOrderStatus : orderStatus,
-            billingPhoneNumber,
-            billingCountry,
-            email,
-            productName,
-            createdFrom,
-            createdTo
+                orderStatus.isEmpty() ? allOrderStatus : orderStatus,
+                billingPhoneNumber,
+                billingCountry,
+                email,
+                productName,
+                createdFrom,
+                createdTo
         );
 
         Page<Order> orderPage = orderRepository.findAll(spec, pageable);
@@ -228,7 +230,7 @@ public class OrderService {
         }
 
         Specification<Order>
-            spec = OrderSpecification.existsByCreatedByAndInProductIdAndOrderStatusCompleted(userId, productIds);
+                spec = OrderSpecification.existsByCreatedByAndInProductIdAndOrderStatusCompleted(userId, productIds);
         boolean existedOrder = orderRepository.findOne(spec).isPresent();
 
         return new OrderExistsByProductAndUserGetVm(existedOrder);
@@ -300,12 +302,12 @@ public class OrderService {
         int pageSize = orderRequest.getPageSize();
 
         OrderListVm orderListVm = getAllOrder(
-            Pair.of(createdFrom, createdTo),
-            productName,
-            orderStatus,
-            Pair.of(billingCountry, billingPhoneNumber),
-            email,
-            Pair.of(pageNo, pageSize)
+                Pair.of(createdFrom, createdTo),
+                productName,
+                orderStatus,
+                Pair.of(billingCountry, billingPhoneNumber),
+                email,
+                Pair.of(pageNo, pageSize)
         );
 
         if (Objects.isNull(orderListVm.orderList())) {
@@ -313,7 +315,7 @@ public class OrderService {
         }
 
         List<BaseCsv> orders = orderListVm.orderList().stream().map(orderMapper::toCsv).collect(
-            Collectors.toUnmodifiableList());
+                Collectors.toUnmodifiableList());
         return CsvExporter.exportToCsv(orders, OrderItemCsv.class);
     }
 }

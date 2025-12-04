@@ -41,7 +41,7 @@ public class MediaService extends AbstractCircuitBreakFallbackHandler {
             return new NoFileMediaVm(null, "", "", "", "");
         }
         final URI url = UriComponentsBuilder
-                .fromHttpUrl(serviceUrlConfig.media())
+                .fromUriString(serviceUrlConfig.media())
                 .path("/medias/{id}")
                 .buildAndExpand(id)
                 .toUri();
@@ -55,7 +55,7 @@ public class MediaService extends AbstractCircuitBreakFallbackHandler {
     @Retry(name = "restApi")
     @CircuitBreaker(name = "restCircuitBreaker", fallbackMethod = "handleMediaFallback")
     public NoFileMediaVm saveFile(MultipartFile multipartFile, String caption, String fileNameOverride) {
-        final URI url = UriComponentsBuilder.fromHttpUrl(serviceUrlConfig.media()).path("/medias").build().toUri();
+        final URI url = UriComponentsBuilder.fromUriString(serviceUrlConfig.media()).path("/medias").build().toUri();
         final String jwt = ((Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
                 .getTokenValue();
 
@@ -76,7 +76,7 @@ public class MediaService extends AbstractCircuitBreakFallbackHandler {
     @Retry(name = "restApi")
     @CircuitBreaker(name = "restCircuitBreaker", fallbackMethod = "handleBodilessFallback")
     public void removeMedia(Long id) {
-        final URI url = UriComponentsBuilder.fromHttpUrl(serviceUrlConfig.media()).path("/medias/{id}")
+        final URI url = UriComponentsBuilder.fromUriString(serviceUrlConfig.media()).path("/medias/{id}")
                 .buildAndExpand(id).toUri();
         final String jwt = ((Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
                 .getTokenValue();

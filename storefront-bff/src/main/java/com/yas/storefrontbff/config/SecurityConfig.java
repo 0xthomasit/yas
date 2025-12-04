@@ -70,22 +70,34 @@ public class SecurityConfig {
 
                 if (userInfo.hasClaim(REALM_ACCESS_CLAIM)) {
                     var realmAccess = userInfo.getClaimAsMap(REALM_ACCESS_CLAIM);
-                    var roles = (Collection<String>) realmAccess.get(ROLES_CLAIM);
-                    mappedAuthorities.addAll(generateAuthoritiesFromClaim(roles));
+                    mappedAuthorities.addAll(generateAuthoritiesFromClaim(extractRoles(realmAccess.get(ROLES_CLAIM))));
                 }
             } else {
                 var oauth2UserAuthority = (OAuth2UserAuthority) authority;
                 Map<String, Object> userAttributes = oauth2UserAuthority.getAttributes();
 
                 if (userAttributes.containsKey(REALM_ACCESS_CLAIM)) {
-                    var realmAccess = (Map<String, Object>) userAttributes.get(REALM_ACCESS_CLAIM);
-                    var roles = (Collection<String>) realmAccess.get(ROLES_CLAIM);
-                    mappedAuthorities.addAll(generateAuthoritiesFromClaim(roles));
+                    var realmAccessClaim = userAttributes.get(REALM_ACCESS_CLAIM);
+
+                    if (realmAccessClaim instanceof Map<?, ?> realmAccess) {
+                        mappedAuthorities.addAll(generateAuthoritiesFromClaim(extractRoles(realmAccess.get(ROLES_CLAIM))));
+                    }
                 }
             }
 
             return mappedAuthorities;
         };
+    }
+
+    private Collection<String> extractRoles(Object rolesClaim) {
+        if (rolesClaim instanceof Collection<?> rolesCollection) {
+            return rolesCollection.stream()
+                .filter(String.class::isInstance)
+                .map(String.class::cast)
+                .collect(Collectors.toSet());
+        }
+
+        return Set.of();
     }
 
     Collection<GrantedAuthority> generateAuthoritiesFromClaim(Collection<String> roles) {

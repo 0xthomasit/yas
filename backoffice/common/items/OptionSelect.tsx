@@ -1,4 +1,4 @@
-import { Path, RegisterOptions, UseFormRegister, FieldValues } from 'react-hook-form';
+import { FieldValues, Path, RegisterOptions, UseFormRegister } from 'react-hook-form';
 
 type Option = {
   id: string | number;
@@ -9,7 +9,7 @@ type OptionSelectProps<T extends FieldValues> = {
   labelText: string;
   field: Path<T>;
   register: UseFormRegister<T>;
-  registerOptions?: RegisterOptions;
+  registerOptions?: RegisterOptions<T, Path<T>>;
   error?: string;
   options?: Option[];
   defaultValue?: string | number;

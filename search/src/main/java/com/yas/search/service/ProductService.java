@@ -5,6 +5,7 @@ import co.elastic.clients.elasticsearch._types.aggregations.StringTermsAggregate
 import co.elastic.clients.elasticsearch._types.aggregations.StringTermsBucket;
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
+import co.elastic.clients.json.JsonData;
 import com.yas.search.constant.ProductField;
 import com.yas.search.constant.enums.SortType;
 import com.yas.search.model.Product;
@@ -20,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.elasticsearch.common.unit.Fuzziness;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchAggregation;
@@ -56,13 +56,12 @@ public class ProductService {
                                         .multiMatch(m -> m
                                                 .fields(ProductField.NAME, ProductField.BRAND, ProductField.CATEGORIES)
                                                 .query(productCriteria.keyword())
-                                                .fuzziness(Fuzziness.ONE.asString())
+                                                .fuzziness("1")
                                         )
                                 )
                         )
                 )
                 .withPageable(PageRequest.of(productCriteria.page(), productCriteria.size()));
-
 
         nativeQuery.withFilter(f -> f
                 .bool(b -> {
@@ -119,23 +118,33 @@ public class ProductService {
         });
     }
 
-    private void extractedRange(Number min, Number max, BoolQuery.Builder bool) {
-        if (min != null || max != null) {
-            bool.must(m -> m
-                    .range(r -> r
-                            .field(ProductField.PRICE)
-                            .from(min != null ? min.toString() : null)
-                            .to(max != null ? max.toString() : null)
-                    )
-            );
+    private void extractedRange(Number min, Number max, BoolQuery.Builder b) {
+        if (min == null && max == null) {
+            return;
         }
+
+        b.must(m -> m.range(rangeQuery -> rangeQuery.untyped(u -> {
+            u.field(ProductField.PRICE);
+            if (min != null) {
+                u.gte(JsonData.of(min));
+            }
+            if (max != null) {
+                u.lte(JsonData.of(max));
+            }
+            return u;
+        })));
     }
 
+    @SuppressWarnings("unchecked")
     private Map<String, Map<String, Long>> getAggregations(SearchHits<Product> searchHits) {
         List<org.springframework.data.elasticsearch.client.elc.Aggregation> aggregations = new ArrayList<>();
         if (searchHits.hasAggregations()) {
-            ((List<ElasticsearchAggregation>) searchHits.getAggregations().aggregations()) //NOSONAR
-                    .forEach(elsAgg -> aggregations.add(elsAgg.aggregation()));
+            Object rawAggregations = searchHits.getAggregations().aggregations();
+            if (rawAggregations instanceof List<?> list && !list.isEmpty()
+                    && list.getFirst() instanceof ElasticsearchAggregation) {
+                ((List<ElasticsearchAggregation>) rawAggregations)
+                        .forEach(elsAgg -> aggregations.add(elsAgg.aggregation()));
+            }
         }
 
         Map<String, Map<String, Long>> aggregationsMap = new HashMap<>();
@@ -159,8 +168,9 @@ public class ProductService {
                         )
                 )
                 .withSourceFilter(new FetchSourceFilter(
+                        false,
                         new String[]{"name"},
-                        null)
+                        new String[]{})
                 )
                 .build();
         SearchHits<Product> result = elasticsearchOperations.search(matchQuery, Product.class);

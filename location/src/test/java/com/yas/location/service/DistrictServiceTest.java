@@ -21,10 +21,13 @@ public class DistrictServiceTest {
 
     @Autowired
     private CountryRepository countryRepository;
+
     @Autowired
     private StateOrProvinceRepository stateOrProvinceRepository;
+
     @Autowired
     private DistrictRepository districtRepository;
+
     @Autowired
     private DistrictService districtService;
 

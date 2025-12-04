@@ -41,7 +41,7 @@ import org.springframework.ai.document.Document;
 import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
@@ -63,10 +63,10 @@ public class ProductCdcConsumerTest extends CdcConsumerTest<ProductMsgKey, Produ
     @Autowired
     private RecommendationConfig recommendationConfig;
 
-    @MockBean
+    @MockitoBean
     private EmbeddingModel embeddingModel;
 
-    @MockBean
+    @MockitoBean
     private EmbeddingSearchConfiguration embeddingSearchConfiguration;
 
     @SpyBean
@@ -116,7 +116,7 @@ public class ProductCdcConsumerTest extends CdcConsumerTest<ProductMsgKey, Produ
         when(embeddingModel.embed(any(Document.class))).thenReturn(randomEmbed());
 
         // Simulate Product Detail API response
-        final URI url = UriComponentsBuilder.fromHttpUrl(recommendationConfig.getApiUrl())
+        final URI url = UriComponentsBuilder.fromUriString(recommendationConfig.getApiUrl())
                 .path(STOREFRONT_PRODUCTS_PATH)
                 .buildAndExpand(productId)
                 .toUri();
@@ -150,7 +150,7 @@ public class ProductCdcConsumerTest extends CdcConsumerTest<ProductMsgKey, Produ
         when(embeddingModel.embed(any(Document.class))).thenReturn(randomEmbed());
 
         // Simulate Product Detail API response
-        final URI url = UriComponentsBuilder.fromHttpUrl(recommendationConfig.getApiUrl())
+        final URI url = UriComponentsBuilder.fromUriString(recommendationConfig.getApiUrl())
                 .path(STOREFRONT_PRODUCTS_PATH)
                 .buildAndExpand(productId)
                 .toUri();
@@ -172,7 +172,7 @@ public class ProductCdcConsumerTest extends CdcConsumerTest<ProductMsgKey, Produ
         ProductDetailVm response2 = getProductDetailVm(productId2);
 
         // Simulate Product Detail API response
-        final URI url2 = UriComponentsBuilder.fromHttpUrl(recommendationConfig.getApiUrl())
+        final URI url2 = UriComponentsBuilder.fromUriString(recommendationConfig.getApiUrl())
                 .path(STOREFRONT_PRODUCTS_PATH)
                 .buildAndExpand(productId2)
                 .toUri();
@@ -222,7 +222,7 @@ public class ProductCdcConsumerTest extends CdcConsumerTest<ProductMsgKey, Produ
         when(embeddingModel.embed(any(Document.class))).thenReturn(randomEmbed());
 
         // Simulate Product Detail API response
-        final URI url = UriComponentsBuilder.fromHttpUrl(recommendationConfig.getApiUrl())
+        final URI url = UriComponentsBuilder.fromUriString(recommendationConfig.getApiUrl())
                 .path(STOREFRONT_PRODUCTS_PATH)
                 .buildAndExpand(productId)
                 .toUri();
@@ -290,7 +290,7 @@ public class ProductCdcConsumerTest extends CdcConsumerTest<ProductMsgKey, Produ
         when(embeddingModel.embed(any(Document.class))).thenReturn(randomEmbed());
 
         // Simulate Product Detail API response
-        final URI url = UriComponentsBuilder.fromHttpUrl(recommendationConfig.getApiUrl())
+        final URI url = UriComponentsBuilder.fromUriString(recommendationConfig.getApiUrl())
                 .path(STOREFRONT_PRODUCTS_PATH)
                 .buildAndExpand(productId)
                 .toUri();

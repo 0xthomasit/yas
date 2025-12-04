@@ -20,8 +20,9 @@ public class BackofficeBffApplication {
     @Order(Ordered.HIGHEST_PRECEDENCE)
     WebFilter writeableHeaders() {
         return (exchange, chain) -> {
-            HttpHeaders writeableHeaders = HttpHeaders.writableHttpHeaders(
-                    exchange.getRequest().getHeaders());
+//            HttpHeaders writeableHeaders = HttpHeaders.writableHttpHeaders(
+//                    exchange.getRequest().getHeaders());
+            HttpHeaders writeableHeaders = exchange.getRequest().getHeaders();
             ServerHttpRequestDecorator writeableRequest = new ServerHttpRequestDecorator(
                     exchange.getRequest()) {
                 @Override

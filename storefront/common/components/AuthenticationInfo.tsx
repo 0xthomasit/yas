@@ -61,7 +61,7 @@ export default function AuthenticationInfo() {
         </Dropdown>
       ) : (
         <div>
-          <Link href="/oauth2/authorization/keycloak" className="d-blockh-full">
+          <Link href="/oauth2/authorization/api-client" className="d-block h-full">
             Login
           </Link>
         </div>

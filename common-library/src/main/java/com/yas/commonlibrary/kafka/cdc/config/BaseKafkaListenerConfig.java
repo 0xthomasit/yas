@@ -60,7 +60,7 @@ public abstract class BaseKafkaListenerConfig<K, V> {
     }
 
     private Map<String, Object> buildConsumerProperties() {
-        return kafkaProperties.buildConsumerProperties(null);
+        return kafkaProperties.buildConsumerProperties();
     }
 
 }

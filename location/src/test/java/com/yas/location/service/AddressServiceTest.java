@@ -28,12 +28,16 @@ public class AddressServiceTest {
 
     @Autowired
     private AddressRepository addressRepository;
+
     @Autowired
     private CountryRepository countryRepository;
+
     @Autowired
     private DistrictRepository districtRepository;
+
     @Autowired
     private StateOrProvinceRepository stateOrProvinceRepository;
+
     @Autowired
     private AddressService addressService;
 

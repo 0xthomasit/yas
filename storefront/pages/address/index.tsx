@@ -1,7 +1,7 @@
 import { NextPage } from 'next';
 import Head from 'next/head';
 import React, { useEffect, useState } from 'react';
-import { Address } from '../../modules/address/models/AddressModel';
+import type { Address as AddressModel } from '../../modules/address/models/AddressModel';
 import { deleteAddress } from '../../modules/address/services/AddressService';
 import {
   chooseDefaultAddress,
@@ -37,7 +37,7 @@ const crumb: BreadcrumbModel[] = [
 
 const Address: NextPage = () => {
   const router = useRouter();
-  const [addresses, setAddresses] = useState<Address[]>([]);
+  const [addresses, setAddresses] = useState<AddressModel[]>([]);
 
   const [showModalDelete, setShowModalDelete] = useState<boolean>(false);
   const [addressIdWantToDelete, setAddressIdWantToDelete] = useState<number>(0);

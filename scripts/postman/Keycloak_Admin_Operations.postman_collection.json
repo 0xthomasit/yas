@@ -1,0 +1,128 @@
+{
+	"info": {
+		"name": "Keycloak Admin Operations",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://identity",
+			"type": "string"
+		},
+		{
+			"key": "realm",
+			"value": "Yas",
+			"type": "string"
+		},
+        {
+            "key": "admin_realm",
+            "value": "master",
+            "type": "string"
+        },
+        {
+            "key": "target_client_id",
+            "value": "storefront-bff",
+            "type": "string"
+        },
+        {
+            "key": "admin_token",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "client_uuid",
+            "value": "",
+            "type": "string"
+        }
+	],
+	"item": [
+		{
+			"name": "1. Get Admin Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"pm.collectionVariables.set(\"admin_token\", jsonData.access_token);",
+							"console.log(\"Admin Token set\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{ "key": "client_id", "value": "admin-cli", "type": "text" },
+						{ "key": "username", "value": "admin", "type": "text" },
+						{ "key": "password", "value": "admin", "type": "text" },
+						{ "key": "grant_type", "value": "password", "type": "text" }
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/realms/{{admin_realm}}/protocol/openid-connect/token",
+					"host": ["{{base_url}}"],
+					"path": ["realms", "{{admin_realm}}", "protocol", "openid-connect", "token"]
+				}
+			}
+		},
+		{
+			"name": "2. Get Client UUID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"if (jsonData.length > 0) {",
+							"    pm.collectionVariables.set(\"client_uuid\", jsonData[0].id);",
+							"    console.log(\"Client UUID set: \" + jsonData[0].id);",
+							"} else {",
+							"    console.log(\"Client not found\");",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{ "key": "token", "value": "{{admin_token}}", "type": "string" }
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/admin/realms/{{realm}}/clients?clientId={{target_client_id}}",
+					"host": ["{{base_url}}"],
+					"path": ["admin", "realms", "{{realm}}", "clients"],
+					"query": [{ "key": "clientId", "value": "{{target_client_id}}" }]
+				}
+			}
+		},
+		{
+			"name": "3. Regenerate Client Secret",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{ "key": "token", "value": "{{admin_token}}", "type": "string" }
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/admin/realms/{{realm}}/clients/{{client_uuid}}/client-secret",
+					"host": ["{{base_url}}"],
+					"path": ["admin", "realms", "{{realm}}", "clients", "{{client_uuid}}", "client-secret"]
+				}
+			}
+		}
+	]
+}

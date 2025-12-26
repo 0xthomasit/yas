@@ -1,0 +1,145 @@
+server {
+  server_name api.yas.local;
+
+  # Docker DNS
+  resolver 127.0.0.11;
+
+  location /media/ {
+    set $docker_media_host "media";
+    proxy_pass http://$docker_media_host;
+  }
+  location /swagger-ui/ {
+    proxy_pass http://swagger-ui:8080;
+  }
+  location /product/ {
+    set $docker_product_host "product";
+    proxy_pass http://$docker_product_host;
+  }
+  location /customer/ {
+    set $docker_customer_host "customer";
+    proxy_pass http://$docker_customer_host;
+  }
+  location /cart/ {
+    set $docker_cart_host "cart";
+    proxy_pass http://$docker_cart_host;
+  }
+  location /rating/ {
+    set $docker_rating_host "rating";
+    proxy_pass http://$docker_rating_host;
+  }
+  location /order/ {
+    set $docker_order_host "order";
+    proxy_pass http://$docker_order_host;
+  }
+  location /location/ {
+    set $docker_location_host "location";
+    proxy_pass http://$docker_location_host;
+  }
+  location /inventory/ {
+    set $docker_inventory_host "inventory";
+    proxy_pass http://$docker_inventory_host;
+  }
+  location /tax/ {
+    set $docker_tax_host "tax";
+    proxy_pass http://$docker_tax_host;
+  }
+  location /promotion/ {
+    set $docker_promotion_host "promotion";
+    proxy_pass http://$docker_promotion_host;
+  }
+  location /search/ {
+    #hack to prevent nginx to resolve container's host on start up
+    set $docker_search_host "search";
+    proxy_pass http://$docker_search_host;
+  }
+  location /payment/ {
+    set $docker_payment_host "payment";
+    proxy_pass http://$docker_payment_host;
+  }
+  location /webhook/ {
+    set $docker_webhook_host "webhook";
+    proxy_pass http://$docker_webhook_host;
+  }
+  location /sampledata/ {
+    set $docker_sampledata_host "sampledata";
+    proxy_pass http://$docker_sampledata_host;
+  }
+  location /recommendation/ {
+    set $docker_recommendation_host "recommendation";
+    proxy_pass http://$docker_recommendation_host;
+  }
+}
+
+server {
+  server_name backoffice;
+  location / {
+    set $docker_backoffice_host "backoffice";
+    proxy_pass http://$docker_backoffice_host;
+  }
+}
+
+server {
+  server_name storefront;
+  location / {
+    set $docker_storefront_host "storefront";
+    proxy_pass http://$docker_storefront_host;
+  }
+}
+
+server {
+  server_name pgadmin.yas.local;
+  location / {
+    set $docker_pgadmin_host "pgadmin";
+    proxy_pass http://$docker_pgadmin_host;
+  }
+}
+
+server {
+  server_name identity;
+  large_client_header_buffers 8 32k;
+  location / {
+    proxy_pass http://identity;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+    # Workaround to void CORS error from Reactjs
+    if ($uri ~ "^(.*)/(protocol/openid-connect/auth|login/oauth2/code)(.*)") {
+    	add_header Access-Control-Allow-Origin *;
+    }
+  }
+}
+
+server {
+  server_name grafana;
+
+  resolver 127.0.0.11;
+
+  location / {
+    set $docker_grafana_host "grafana";
+    proxy_pass http://$docker_grafana_host:3000;
+  }
+}
+
+server {
+  server_name elasticsearch;
+
+  resolver 127.0.0.11;
+
+  location / {
+    set $docker_elasticsearch_host "elasticsearch";
+    proxy_pass http://$docker_elasticsearch_host:9200;
+  }
+}
+
+server {
+  server_name kafka;
+
+  resolver 127.0.0.11;
+
+  location / {
+    set $docker_kafka_host "kafka";
+    proxy_pass http://$docker_kafka_host:9092;
+  }
+}

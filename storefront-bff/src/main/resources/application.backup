@@ -64,7 +64,7 @@ spring:
             - TokenRelay=
             - StripPrefix=1
         - id: nextjs
-          uri: http://localhost:3000
+          uri: http://localhost:3001
           predicates:
             - Path=/**
 ---
@@ -86,7 +86,7 @@ spring:
             - TokenRelay=
             - StripPrefix=1
         - id: nextjs
-          uri: http://storefront-nextjs:3000
+          uri: http://storefront
           predicates:
             - Path=/**
 ---

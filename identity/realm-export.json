@@ -989,6 +989,7 @@
       "secret": "ZrU9I0q2uXBglBnmvyJdkl1lf0ncr8tn",
       "redirectUris": [
         "http://storefront/*",
+        "http://storefront:8087/*",
         "http://localhost:8087/*"
       ],
       "webOrigins": [],

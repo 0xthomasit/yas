@@ -191,7 +191,7 @@ spec:
         image: ghcr.io/nashtech-garage/yas-storefront:latest
         ports:
         - name: http
-          containerPort: 3000
+          containerPort: 3001
 ---
 
 apiVersion: apps/v1
@@ -226,7 +226,7 @@ spec:
         image: ghcr.io/nashtech-garage/yas-backoffice:latest
         ports:
         - name: http
-          containerPort: 3000
+          containerPort: 3002
 ---
 
 apiVersion: apps/v1

@@ -67,7 +67,7 @@ spring:
             - RewritePath=/api/(?<segment>.*), /$\{segment}
             - TokenRelay=
         - id: nextjs
-          uri: http://localhost:3000
+          uri: http://localhost:3002
           predicates:
             - Path=/**
 ---
@@ -89,6 +89,6 @@ spring:
             - TokenRelay=
             - StripPrefix=1
         - id: nextjs
-          uri: http://backoffice-nextjs:3000
+          uri: http://backoffice-nextjs:3002
           predicates:
             - Path=/**

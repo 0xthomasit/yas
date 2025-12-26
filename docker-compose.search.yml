@@ -1,9 +1,9 @@
-version: "3.9"
-
 services:
   search:
-    image: ghcr.io/nashtech-garage/yas-search:latest
-    entrypoint: [ "./wait-for-it.sh", "elasticsearch:9200", "--timeout=300", "--", "java", "-jar", "/app.jar" ]
+    build:
+      context: ./
+      dockerfile: search/Dockerfile
+    entrypoint: [ "./wait-for-it.sh", "elasticsearch:9200", "--timeout=300", "--", "java", "-jar", "search.jar" ]
     environment:
     - SERVER_SERVLET_CONTEXT_PATH=/search
     - YAS_PUBLIC_URL=${YAS_PUBLIC_API_URL}/search
@@ -44,6 +44,8 @@ services:
 
 networks:
   yas-network:
+    name: yas-network
+    external: true
 
 volumes:
   esdata:

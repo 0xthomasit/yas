@@ -68,7 +68,7 @@ server {
 server {
   server_name storefront;
   location / {
-    proxy_pass http://storefront;
+    proxy_pass http://storefront:8087;
   }
 }
 

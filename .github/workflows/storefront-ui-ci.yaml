@@ -1,18 +1,18 @@
-name: storefront service ci
+name: storefront-ui service ci
 
 on:
   push:
     branches: [ "main" ]
     paths:
-      - "storefront/**"
+      - "storefront-ui/**"
       - ".github/workflows/actions/action.yaml"
-      - ".github/workflows/storefront-ci.yaml"
+      - ".github/workflows/storefront-ui-ci.yaml"
   pull_request:
     branches: [ "main" ]
     paths:
-      - "storefront/**"
+      - "storefront-ui/**"
       - ".github/workflows/actions/action.yaml"
-      - ".github/workflows/storefront-ci.yaml"
+      - ".github/workflows/storefront-ui-ci.yaml"
   workflow_dispatch:
 
 jobs:
@@ -28,18 +28,18 @@ jobs:
         with:
           node-version: 20
       - run: npm ci
-        working-directory: storefront
+        working-directory: storefront-ui
       - run: npm run build
-        working-directory: storefront
+        working-directory: storefront-ui
       - run: npm run lint
-        working-directory: storefront
+        working-directory: storefront-ui
       - run: npx prettier --check .
-        working-directory: storefront
+        working-directory: storefront-ui
       - name: SonarCloud Scan
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
         uses: SonarSource/sonarcloud-github-action@master
         with:
-          projectBaseDir: storefront
+          projectBaseDir: storefront-ui
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -54,6 +54,6 @@ jobs:
         if: ${{ github.ref == 'refs/heads/main' }}
         uses: docker/build-push-action@v6
         with:
-          context: ./storefront
+          context: ./storefront-ui
           push: true
-          tags: ghcr.io/nashtech-garage/yas-storefront:latest
+          tags: ghcr.io/nashtech-garage/yas-storefront-ui:latest

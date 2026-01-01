@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { FieldErrorsImpl, UseFormRegister, UseFormSetValue } from 'react-hook-form';
 import { Input } from '../../../common/items/Input';
 import { OptionSelect } from '../../../common/items/OptionSelect';
-import { Address } from '../../../modules/address/models/AddressModel';
+import { Address } from '../models/AddressModel';
 import { Country } from '../../country/models/Country';
 import { District } from '../../district/models/District';
 import { StateOrProvince } from '../../stateAndProvince/models/StateOrProvince';

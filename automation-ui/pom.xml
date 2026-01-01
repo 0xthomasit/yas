@@ -16,7 +16,7 @@
     <description>YAS automation-ui test</description>
     <modules>
         <module>automation-base</module>
-        <module>storefront</module>
+        <module>storefront-ui</module>
         <module>backoffice</module>
     </modules>
 

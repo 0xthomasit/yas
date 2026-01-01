@@ -37,12 +37,12 @@
 
 ## How to run the frontend locally (not in container)
 
-The frontend (storefont and backoffice) needs to run behind the bff, storefront-bff or backoffice-bff respectively  to enable authentication. So to run locally, we must run the bff first either by the IDE or by command line. Then run the frontend by `npm run dev`. We will not access the frontend directly but via the bff http://localhost:8087/
+The frontend (storefont-ui and backoffice-ui) needs to run behind the bff, storefront-bff or backoffice-bff respectively to enable authentication. So to run locally, we must run the bff first either by the IDE or by command line. Then run the frontend by `npm run dev`. We will not access the frontend directly but via the bff http://localhost:8087/
 
 ## How to run a backend service locally (not in container)
 
 - Run `docker compose up` to start all the services in docker container
-- Run service you want to test in the your IDE
+- Run service you want to test in the IDE
 - Routing the fronend to your locally running service
     - In the application.yaml setting of the bff (backoffice-bff and storefront-bff) spring -> cloud --> gateway --> routes. Add the route to your locally service as the first route. For example
 

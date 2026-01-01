@@ -27,5 +27,5 @@ RUN apk add --no-cache curl bash dos2unix
 WORKDIR /app
 COPY --from=build /app/storefront-bff/wait-for-it.sh wait-for-it.sh
 RUN dos2unix wait-for-it.sh && chmod +x wait-for-it.sh
-COPY --from=build /app/storefront-bff/target/*.jar storefront.jar
-ENTRYPOINT ["java","-jar","storefront.jar"]
+COPY --from=build /app/storefront-bff/target/*.jar storefront-bff.jar
+ENTRYPOINT ["java","-jar","storefront-bff.jar"]

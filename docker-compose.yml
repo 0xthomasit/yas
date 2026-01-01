@@ -61,11 +61,11 @@ services:
       dockerfile: Dockerfile
     networks:
     - yas-network
-  storefront: # storefront-bff
+  storefront-bff: # storefront-bff
     build:
       context: ./
       dockerfile: storefront-bff/Dockerfile
-    entrypoint: ["./wait-for-it.sh", "identity:80", "--timeout=300", "--", "java", "-jar", "storefront.jar"]
+    entrypoint: ["./wait-for-it.sh", "identity:80", "--timeout=300", "--", "java", "-jar", "storefront-bff.jar"]
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - SERVER_PORT=8087
@@ -98,9 +98,9 @@ services:
       - ./deployment/app-config:/app-config      
     networks:
       - yas-network
-  storefront-nextjs:
+  storefront-ui:
     build:
-      context: ./storefront
+      context: ./storefront-ui
       dockerfile: Dockerfile
     networks:
       - yas-network

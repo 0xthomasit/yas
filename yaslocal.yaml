@@ -187,8 +187,8 @@ spec:
         ports:
         - name: http
           containerPort: 80
-      - name: storefront
-        image: ghcr.io/nashtech-garage/yas-storefront:latest
+      - name: storefront-ui
+        image: ghcr.io/nashtech-garage/yas-storefront-ui:latest
         ports:
         - name: http
           containerPort: 3001
@@ -222,8 +222,8 @@ spec:
         ports:
         - name: http
           containerPort: 80
-      - name: backoffice
-        image: ghcr.io/nashtech-garage/yas-backoffice:latest
+      - name: backoffice-ui
+        image: ghcr.io/nashtech-garage/yas-backoffice-ui:latest
         ports:
         - name: http
           containerPort: 3002

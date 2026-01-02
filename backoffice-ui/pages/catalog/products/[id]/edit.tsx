@@ -21,7 +21,7 @@ import { getProduct, updateProduct } from '@catalogServices/ProductService';
 import { handleUpdatingResponse } from '@commonServices/ResponseStatusHandlingService';
 import { toastError } from '@commonServices/ToastService';
 import { PRODUCT_URL, ResponseStatus } from '@constants/Common';
-import ProductAttributes from '../[id]/productAttributes';
+import ProductAttributes from './productAttributes';
 
 const EditProduct: NextPage = () => {
   //Get ID

@@ -5,7 +5,7 @@ YAS is a pet project aim to practice building a typical microservice application
 [![Gitleaks-check](https://github.com/nashtech-garage/yas/actions/workflows/gitleaks-check.yaml/badge.svg)](https://github.com/nashtech-garage/yas/actions/workflows/gitleaks-check.yaml)
 [![storefront-ui-ci](https://github.com/nashtech-garage/yas/actions/workflows/storefront-ui-ci.yaml/badge.svg)](https://github.com/nashtech-garage/yas/actions/workflows/storefront-ui-ci.yaml)
 [![storefront-bff-ci](https://github.com/nashtech-garage/yas/actions/workflows/storefront-bff-ci.yaml/badge.svg)](https://github.com/nashtech-garage/yas/actions/workflows/storefront-bff-ci.yaml)
-[![backoffice-ci](https://github.com/nashtech-garage/yas/actions/workflows/backoffice-ci.yaml/badge.svg)](https://github.com/nashtech-garage/yas/actions/workflows/backoffice-ci.yaml)
+[![backoffice-ui-ci](https://github.com/nashtech-garage/yas/actions/workflows/backoffice-ui-ci.yaml/badge.svg)](https://github.com/nashtech-garage/yas/actions/workflows/backoffice-ui-ci.yaml)
 [![backoffice-bff-ci](https://github.com/nashtech-garage/yas/actions/workflows/backoffice-bff-ci.yaml/badge.svg)](https://github.com/nashtech-garage/yas/actions/workflows/backoffice-bff-ci.yaml)
 [![product-ci](https://github.com/nashtech-garage/yas/actions/workflows/product-ci.yaml/badge.svg)](https://github.com/nashtech-garage/yas/actions/workflows/product-ci.yaml)
 [![media-ci](https://github.com/nashtech-garage/yas/actions/workflows/media-ci.yaml/badge.svg)](https://github.com/nashtech-garage/yas/actions/workflows/media-ci.yaml)

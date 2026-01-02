@@ -1,6 +1,9 @@
 import dynamic from 'next/dynamic';
+import 'react-quill/dist/quill.snow.css'; // Import the styles globally
 
-const ReactQuill = dynamic(import('react-quill'), { ssr: false });
+const ReactQuill = dynamic(() => import('react-quill'), {
+  ssr: false, // This is crucial: disables server-side rendering
+});
 
 export interface TextEditorProps {
   field: string;

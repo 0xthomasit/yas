@@ -647,8 +647,10 @@
       "secret": "TVacLC0cQ8tiiEKiTVerTb2YvwQ1TRJF",
       "redirectUris": [
         "http://backoffice/*",
-        "http://localhost:3000/*",
-        "http://localhost:8087/*"
+        "http://backoffice-bff/*",
+        "http://backoffice-bff:8087/*",
+        "http://localhost:8087/*",
+        "http://localhost:3002/*"
       ],
       "webOrigins": [],
       "notBefore": 0,
@@ -991,7 +993,8 @@
         "http://storefront/*",
         "http://storefront-bff/*",
         "http://storefront-bff:8087/*",
-        "http://localhost:8087/*"
+        "http://localhost:8087/*",
+        "http://localhost:3001/*"
       ],
       "webOrigins": [],
       "notBefore": 0,

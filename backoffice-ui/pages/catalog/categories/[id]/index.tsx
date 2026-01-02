@@ -1,8 +1,8 @@
 import type { NextPage } from 'next';
 import React, { useState } from 'react';
 import { Tab, Tabs } from 'react-bootstrap';
-import Editcategory from '../[id]/edit';
-import ListProduct from '../[id]/listProduct';
+import Editcategory from './edit';
+import ListProduct from './listProduct';
 const CategoryGetById: NextPage = () => {
   const [tabKey, setTabKey] = useState('one');
   return (

@@ -8,7 +8,6 @@
         <version>${revision}</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-
     <name>recommendation</name>
     <artifactId>recommendation</artifactId>
     <version>${revision}</version>

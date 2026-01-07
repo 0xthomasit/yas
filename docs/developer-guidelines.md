@@ -37,7 +37,7 @@
 
 ## How to run the frontend locally (not in container)
 
-The frontend (storefont-ui and backoffice-ui) needs to run behind the bff, storefront-bff or backoffice-bff respectively to enable authentication. So to run locally, we must run the bff first either by the IDE or by command line. Then run the frontend by `npm run dev`. We will not access the frontend directly but via the bff http://localhost:8087/
+The frontend (storefont-ui and backoffice-ui) needs to run behind the bff, storefront-bff or backoffice-bff respectively to enable authentication. So to run locally, we must run the bff first either by the IDE or by command line. Then run the frontend by `npm run dev`. We will not access the frontend directly but via the bff http://localhost:8097/
 
 ## How to run a backend service locally (not in container)
 

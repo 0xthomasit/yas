@@ -527,8 +527,8 @@ spec:
         secret: TVacLC0cQ8tiiEKiTVerTb2YvwQ1TRJF
         redirectUris:
           - {{ .Values.backofficeRedirectUrl }}/*
-          - http://localhost:3000/*
-          - http://localhost:8087/*
+          - http://localhost:3002/*
+          - http://localhost:8097/*
         webOrigins: [ ]
         notBefore: 0
         bearerOnly: false
@@ -821,7 +821,7 @@ spec:
         secret: ZrU9I0q2uXBglBnmvyJdkl1lf0ncr8tn
         redirectUris:
           - {{ .Values.storefrontRedirectUrl }}/*
-          - http://localhost:8087/*
+          - http://localhost:8096/*
         webOrigins: [ ]
         notBefore: 0
         bearerOnly: false

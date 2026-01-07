@@ -648,8 +648,8 @@
       "redirectUris": [
         "http://backoffice/*",
         "http://backoffice-bff/*",
-        "http://backoffice-bff:8087/*",
-        "http://localhost:8087/*",
+        "http://backoffice-bff:8097/*",
+        "http://localhost:8097/*",
         "http://localhost:3002/*"
       ],
       "webOrigins": [],
@@ -992,9 +992,8 @@
       "redirectUris": [
         "http://storefront/*",
         "http://storefront-bff/*",
-        "http://storefront-bff:8087/*",
-        "http://localhost:8087/*",
-        "http://localhost:3001/*"
+        "http://storefront-bff:8096/*",
+        "http://localhost:8096/*"
       ],
       "webOrigins": [],
       "notBefore": 0,
